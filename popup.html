@@ -1,1 +1,38 @@
-<!doctype html><html><body></body></html>
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <title>Point System</title>
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <link rel="stylesheet" href="/src/ui/popup.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="capacity-banner" class="banner hidden"></div>
+
+      <section class="block">
+        <label>Estimate
+          <input id="estimate" type="number" min="0" max="100" step="0.1" placeholder="—" />
+          <span class="unit">point</span>
+        </label>
+        <div id="capacity-bar" class="capbar"><span></span></div>
+        <div id="capacity-text" class="captext"></div>
+      </section>
+
+      <section class="block">
+        <strong>+ Log point</strong>
+        <label>Point <input id="log-point" type="number" min="0" max="100" step="0.1" /></label>
+        <label>Ngày <input id="log-date" type="date" /></label>
+        <label>Ghi chú <input id="log-comment" type="text" /></label>
+        <div id="log-error" class="error"></div>
+        <button id="log-save">Lưu log</button>
+      </section>
+
+      <section class="block">
+        <div class="history-head"><span>Lịch sử</span><span id="grand-total"></span></div>
+        <div id="history"></div>
+      </section>
+    </div>
+    <script type="module" src="/src/ui/popup.ts"></script>
+  </body>
+</html>

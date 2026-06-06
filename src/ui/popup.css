@@ -1,0 +1,22 @@
+body { font: 13px/1.4 -apple-system, system-ui, sans-serif; margin: 0; padding: 10px; width: 320px; }
+.block { padding: 8px 0; border-bottom: 1px solid #eee; }
+label { display: block; margin: 4px 0; }
+input[type="text"], input[type="number"], input[type="date"] { width: 100%; box-sizing: border-box; padding: 4px; }
+.unit { color: #888; }
+.capbar { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; margin: 4px 0; }
+.capbar > span { display: block; height: 100%; background: #5aac44; width: 0; }
+.capbar.warn > span { background: #f2d600; }
+.capbar.danger > span { background: #eb5a46; }
+.captext { color: #666; font-size: 12px; }
+.error { color: #eb5a46; min-height: 16px; }
+.banner { background: #eb5a46; color: #fff; padding: 6px; border-radius: 4px; margin-bottom: 8px; }
+.hidden { display: none; }
+.history-head { display: flex; justify-content: space-between; font-weight: bold; }
+.day-head { margin-top: 6px; color: #555; }
+.row { display: flex; gap: 6px; align-items: center; padding: 2px 0; }
+.row .name { width: 70px; }
+.row .pt { width: 36px; text-align: right; }
+.row .cm { flex: 1; color: #666; }
+.row button { border: none; background: none; cursor: pointer; }
+.empty { color: #aaa; font-style: italic; }
+.button-primary { background: #5aac44; color: #fff; border: none; padding: 6px 12px; border-radius: 3px; cursor: pointer; }
