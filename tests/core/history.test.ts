@@ -28,13 +28,13 @@ describe('buildHistory', () => {
 
   it('tính tổng phụ mỗi ngày', () => {
     const groups = buildHistory(logs);
-    expect(groups[0].subtotal).toBe(4.5);
-    expect(groups[1].subtotal).toBe(2);
+    expect(groups[0]!.subtotal).toBe(4.5);
+    expect(groups[1]!.subtotal).toBe(2);
   });
 
   it('mỗi row giữ memberId, fullName, entryIndex', () => {
     const groups = buildHistory(logs);
-    const day0 = groups[0].rows;
+    const day0 = groups[0]!.rows;
     expect(day0).toContainEqual({
       memberId: 'm1',
       fullName: 'Tuấn',
@@ -53,7 +53,7 @@ describe('buildHistory', () => {
 
   it('entryIndex trỏ đúng vị trí trong entries của member', () => {
     const groups = buildHistory(logs);
-    const day1 = groups[1].rows;
+    const day1 = groups[1]!.rows;
     expect(day1).toEqual([
       {
         memberId: 'm1',
