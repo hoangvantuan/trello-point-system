@@ -53,4 +53,21 @@ describe('parseCard', () => {
     const out = parseCard(cardWith(value, { closed: true, idList: 'L9', idShort: 99 }), PID);
     expect(out).toMatchObject({ closed: true, idList: 'L9', idShort: 99, estimate: 2, entries: [] });
   });
+
+  it('value là JSON null -> null (không crash)', () => {
+    expect(parseCard(cardWith('null'), PID)).toBeNull();
+  });
+
+  it('value là JSON number -> null', () => {
+    expect(parseCard(cardWith('5'), PID)).toBeNull();
+  });
+
+  it('value là JSON array -> null', () => {
+    expect(parseCard(cardWith('[]'), PID)).toBeNull();
+  });
+
+  it('estimate <= 0 hoặc âm -> estimate null', () => {
+    expect(parseCard(cardWith(JSON.stringify({ est: 0 })), PID)?.estimate).toBeNull();
+    expect(parseCard(cardWith(JSON.stringify({ est: -3 })), PID)?.estimate).toBeNull();
+  });
 });

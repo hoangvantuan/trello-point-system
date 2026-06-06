@@ -21,16 +21,21 @@ export function parseCard(card: RawCard, pluginId: string): CardStat | null {
 
   let raw: Record<string, unknown>;
   try {
-    raw = JSON.parse(pd.value) as Record<string, unknown>;
+    const parsed: unknown = JSON.parse(pd.value);
+    // Chỉ chấp nhận object thuần. null/number/array -> bỏ qua, không làm sập dashboard.
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
+    raw = parsed as Record<string, unknown>;
   } catch {
-    return null; // value hỏng -> bỏ qua card, không làm sập dashboard
+    return null; // value hỏng JSON -> bỏ qua card
   }
 
-  const estimate = typeof raw.est === 'number' ? raw.est : null;
+  const est = raw.est;
+  const estimate = typeof est === 'number' && Number.isFinite(est) && est > 0 ? est : null;
   const entries: LogEntry[] = [];
   for (const [key, value] of Object.entries(raw)) {
     if (!key.startsWith(LOG_PREFIX)) continue;
     const memberId = key.slice(LOG_PREFIX.length);
+    if (!memberId) continue; // key 'log_' không có memberId -> bỏ qua
     const log = decodeMemberLog(value); // tái dùng codec phòng thủ
     for (const e of log.entries) {
       entries.push({ memberId, fullName: log.fullName, date: e.date, point: e.point });
