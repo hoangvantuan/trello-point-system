@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "project-memory": {
+      "source": "hoangvantuan/claude-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/project-memory/SKILL.md",
+      "computedHash": "15ba2d2e4b7cfad99a978b3da77783fa500cb36713287cdd789d7c0b388bcd7d"
+    }
+  }
+}
