@@ -1,7 +1,11 @@
 # Dashboard Thống Kê Point System — Thiết kế
 
 Ngày: 2026-06-06
-Trạng thái: Đã chốt qua brainstorming, chờ review spec.
+Trạng thái: Đã chốt qua brainstorming + grill, đã xác minh thực tế trên board. Chờ review spec.
+
+> Bản này thay thế thiết kế "sync thủ công + cache board-scope 8192" trước đó.
+> Lý do đổi hướng: xác minh được REST API **bulk-fetch pluginData mọi card trong 1 request**
+> (gồm cả card đã archive), nên cache trở thành thừa. Chi tiết ở mục 2.
 
 ## 1. Mục tiêu
 
@@ -12,7 +16,7 @@ Thêm **dashboard thống kê** ở cấp board, giải quyết 2 nhu cầu:
 
 Cả hai tab dùng chung **bộ lọc thời gian** (tất cả / hôm nay / tuần này / tháng này / năm này).
 
-Phi mục tiêu: export CSV, biểu đồ burndown/velocity, sync tự động (webhook).
+Phi mục tiêu: export CSV, biểu đồ burndown/velocity, sync tự động (webhook), backend/store ngoài.
 
 ## 2. Ràng buộc kỹ thuật đã xác minh
 
@@ -20,39 +24,54 @@ Phi mục tiêu: export CSV, biểu đồ burndown/velocity, sync tự động (
 
 Không có capability `list-header-section`. Chỉ có `list-actions` (menu "..." của list) và `list-sorters`. Do đó dùng **board-button** mở modal.
 
-### Không thể bulk fetch pluginData
+### REST API BULK-FETCH được pluginData (điểm cốt lõi)
 
-`t.cards('all')` không trả pluginData. Cần gọi REST API `GET /1/cards/{id}/pluginData` từng card. Do đó dùng sync thủ công + cache.
+Giả định cũ "không thể bulk fetch pluginData" **chỉ đúng với client library** (`t.cards('all')` không trả pluginData). Với REST API thì khác:
 
-### Rate limit REST API
+```
+GET /1/boards/{id}/cards?filter=all&pluginData=true
+```
 
-- 100 request/10 giây per token.
-- Board 100 card = ~10 giây sync. Chấp nhận được cho sync thủ công.
+trả về **mọi card trong 1 request**, mỗi card kèm mảng `pluginData` inline. Đã verify thực tế trên board akachan (06/06/2026):
 
-### Dung lượng board-scope
+- 1 request lấy đủ 115 card (71 mở + 44 archive).
+- Card có data trả đúng `value` = JSON string chứa `est` + `log_<memberId>`, khớp codec hiện tại.
+- `filter=all` **giữ nguyên pluginData cho card đã archive**. `filter=visible` loại card archive.
+- pluginData sống sót qua archive. Chỉ **xóa hẳn** card mới mất data.
 
-- Board-scope `shared`: **8192 ký tự** (gấp đôi card-scope).
-- Cần thiết kế cache compact để vừa 8192.
+Hệ quả: **không cần cache**. Mỗi lần mở dashboard fetch tươi rồi tổng hợp client-side.
+
+### Rate limit KHÔNG còn là ràng buộc
+
+100 request/10 giây mỗi token. Với bulk fetch, board ≤1000 card = 1 request, dưới 2 giây. Rate limit chỉ thành vấn đề nếu phải gọi từng card, mà ta không làm vậy nữa.
+
+### Yêu cầu lấy cả card archive
+
+Thống kê point theo user phải tính cả công trên card đã Done + archive, nếu không sẽ báo sai đóng góp. Vì vậy luôn fetch `filter=all`. Xem phạm vi per-tab ở mục 6.
 
 ## 3. Kiến trúc
 
-```
-┌──────────────┐    board-button click    ┌────────────────────────┐
-│ Trello Board │ ──────────────────────► │ Modal Dashboard        │
-└──────────────┘                         │  ┌──────────────────┐  │
-                                         │  │ Tab: Theo List   │  │
-       board+shared                      │  │ Tab: Theo User   │  │
-       "stats" key ◄── cache ────────────┤  │ Filter thời gian │  │
-       (8192 max)                        │  │ Nút Sync         │  │
-                                         │  └──────────────────┘  │
-                                         └────────────────────────┘
+Không còn lớp lưu trữ. Mở modal là fetch, tổng hợp trong RAM, render.
 
-Sync flow:
-  Nút Sync → authorize REST API (lần đầu)
-           → GET /1/boards/{id}/cards
-           → GET /1/cards/{id}/pluginData (batch)
-           → parse + tổng hợp theo ngày + member
-           → t.set('board', 'shared', 'stats', cache)
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant B as Board button
+    participant M as Modal Dashboard
+    participant R as REST API
+
+    U->>B: click "📊 Point Stats"
+    B->>M: mở modal dashboard.html
+    M->>M: kiểm tra token (getRestApi)
+    alt chưa có token
+        M->>U: empty state "Cấp quyền đọc board"
+        U->>R: authorize(read, never)
+    end
+    M->>R: GET /boards/{id}/cards?filter=all&pluginData=true
+    M->>R: GET /boards/{id}/lists?fields=id,name&filter=open
+    R-->>M: cards (inline pluginData) + lists
+    M->>M: parse + tổng hợp client-side (theo filter)
+    M->>U: render bảng + breakdown
 ```
 
 ### Capability mới
@@ -65,105 +84,97 @@ Cần đăng ký thêm capability `board-buttons` tại `trello.com/power-ups/ad
 
 ### Cần appKey khi initialize
 
-`TrelloPowerUp.initialize({...}, { appKey: '...', appName: '...' })` để dùng `t.getRestApi()`. appKey lấy từ Power-Up admin portal (`trello.com/power-ups/admin`), truyền vào qua biến môi trường hoặc hardcode (Power-Up private nội bộ nên chấp nhận được).
+`TrelloPowerUp.initialize({...}, { appKey: '...', appName: '...' })` để dùng `t.getRestApi()`. appKey lấy từ Power-Up admin portal. Power-Up private nội bộ nên hardcode/biến môi trường đều chấp nhận được (appKey vốn lộ trong client JS, không phải bí mật).
 
-## 4. Mô hình dữ liệu cache
+## 4. Mô hình dữ liệu (chỉ trong RAM, KHÔNG persist)
 
-### Cấu trúc lưu tại `board > shared > stats`
+Không lưu trữ gì. Đây là hình dạng dữ liệu sau khi parse response REST, sống trong phiên mở dashboard.
 
 ```typescript
-interface StatsCache {
-  v: 1;                        // schema version
-  at: string;                  // ISO timestamp lần sync gần nhất
-  lists: ListMeta[];           // metadata list trên board
-  cards: CompactCard[];        // dữ liệu tổng hợp mỗi card
+// Một card sau khi parse từ REST. Không ghi đi đâu.
+interface CardStat {
+  id: string;
+  idShort: number;
+  name: string;
+  idList: string;
+  closed: boolean;          // tách phạm vi tab (mục 6)
+  estimate: number | null;
+  entries: LogEntry[];      // mọi entry của mọi member trên card
 }
 
-interface ListMeta {
-  id: string;                  // list ID (24 ký tự)
-  name: string;                // tên list
-}
-
-interface CompactCard {
-  id: string;                  // card ID (24 ký tự)
-  l: string;                   // listId (24 ký tự)
-  e: number | null;            // estimate
-  d: DaySummary[];             // tổng hợp theo ngày + member
-}
-
-interface DaySummary {
-  dt: string;                  // YYYY-MM-DD
-  m: string;                   // memberId (24 ký tự)
-  n: string;                   // fullName (cho hiển thị)
-  p: number;                   // tổng point trong ngày của member đó
+// Một lần log, đã phẳng hoá kèm member để tổng hợp.
+interface LogEntry {
+  memberId: string;
+  fullName: string;         // từ field n trong log_<memberId>
+  date: string;             // YYYY-MM-DD
+  point: number;
 }
 ```
 
-### Ước tính dung lượng
+Tổng hợp (theo list, theo user, breakdown) tính **on-the-fly** từ `CardStat[]` mỗi khi đổi tab hoặc đổi filter. Tái dùng codec parse hiện có (`decodeMemberLog`) cho phần `value`.
 
-Mỗi `DaySummary` ≈ 80 ký tự serialize. Mỗi card (1 member, 5 ngày log) ≈ 470 ký tự.
+Không có trần dung lượng vì không ghi pluginData. Trần duy nhất là số card 1 request trả về (mục 11).
 
-- Board 10 card: ≈ 5000 ký tự → vừa 8192.
-- Board 15+ card: có thể vượt.
+## 5. Luồng lấy dữ liệu
 
-**Chiến lược khi vượt 8192:**
-1. Rút gọn fullName → chỉ giữ ký tự đầu (initial). Tiết kiệm ~30%.
-2. Nếu vẫn vượt: chỉ giữ data trong khung thời gian được chọn khi sync (ví dụ: 3 tháng gần nhất).
-3. Hiện cảnh báo: "Board có quá nhiều dữ liệu, chỉ hiển thị N tháng gần nhất".
-
-## 5. Sync flow chi tiết
-
-### Bước 1: Authorize (lần đầu)
+### Bước 1: Authorize (lazy, lần đầu mỗi người)
 
 ```typescript
 const restApi = t.getRestApi();
 const token = await restApi.getToken();
 if (!token) {
+  // KHÔNG popup ngay khi mở modal. Chỉ authorize khi user chủ động bấm "Tải thống kê".
   await restApi.authorize({ scope: 'read', expiration: 'never' });
 }
 ```
 
-User chỉ cần cấp quyền `read`. Không cần `write`.
+Mỗi thành viên tự cấp token `read` của mình (không backend nên không có token dùng chung). Chấp nhận friction "mỗi người 1 lần".
 
-### Bước 2: Fetch cards
-
-```
-GET /1/boards/{boardId}/cards?fields=id,idList,name&filter=visible
-```
-
-Dùng `filter=visible` để bỏ card đã archive. Nếu user muốn cả archive, thêm `filter=all`.
-
-### Bước 3: Fetch pluginData (batch)
-
-Gọi `GET /1/cards/{id}/pluginData` cho từng card. Batch 10 request đồng thời, chờ batch xong mới batch tiếp. Tránh vượt rate limit 100/10s.
-
-Hiển thị progress bar: "Đang sync... 25/50 cards".
-
-### Bước 4: Parse và tổng hợp
-
-Với mỗi card:
-1. Tìm pluginData có `idPlugin` khớp Power-Up ID.
-2. Parse value (JSON), lấy `est` và các key `log_*`.
-3. Decode mỗi `log_*` thành entries.
-4. Tổng hợp entries theo ngày + member → mảng `DaySummary`.
-
-### Bước 5: Lưu cache
-
-```typescript
-await t.set('board', 'shared', 'stats', cache);
-```
-
-Kiểm tra `JSON.stringify(cache).length <= 8192` trước khi ghi. Nếu vượt, áp dụng chiến lược rút gọn.
-
-### Bước 6: Fetch list metadata
+### Bước 2: Bulk fetch cards + lists
 
 ```
+GET /1/boards/{boardId}/cards?filter=all&pluginData=true&fields=id,idShort,name,idList,closed&card_fields=...
 GET /1/boards/{boardId}/lists?fields=id,name&filter=open
 ```
 
-Lưu vào `cache.lists` để map listId → tên list.
+`filter=all` để gồm card archive. `fields` gọn để giảm payload.
 
-## 6. Giao diện
+### Bước 3: Phân trang khi board lớn (fallback)
+
+Nếu response trả về đúng ngưỡng cap (dấu hiệu còn card chưa lấy), phân trang:
+
+```
+...&limit=1000&before={idCardCuốiCùng}
+```
+
+lặp tới khi trả về < 1000 card. Mỗi trang 1 request, vẫn dưới rate limit.
+
+### Bước 4: Guard cảnh báo
+
+Nếu nghi ngờ thiếu card (chạm cap mà không phân trang được, hoặc lỗi giữa chừng), hiện cảnh báo **thay vì âm thầm sai số**: "Board quá lớn, thống kê có thể chưa đủ card".
+
+### Bước 5: Parse và tổng hợp
+
+Với mỗi card:
+1. Lấy phần tử `pluginData` có `idPlugin` khớp Power-Up ID.
+2. Parse `value` (JSON), lấy `est` và các key `log_*`.
+3. Decode mỗi `log_*` (tái dùng `decodeMemberLog`) thành entries, phẳng hoá kèm `memberId` + `fullName` → `LogEntry[]`.
+4. Gói thành `CardStat` kèm `closed`, `idList`.
+
+Tổng hợp theo list/user + breakdown tính client-side, áp filter thời gian.
+
+## 6. Phạm vi card theo tab
+
+Fetch 1 lần `filter=all`, rồi tách phạm vi phía client bằng cờ `closed`:
+
+| Tab | Phạm vi card | Lý do |
+|---|---|---|
+| Theo User | **Tất cả** (mở + archive) | Đóng góp tích lũy, phải đủ. Công trên card đã archive vẫn là công của user. |
+| Theo List | **Chỉ visible** (`closed === false`) | Ảnh chụp tiến độ board hiện tại. Lọc visible cũng né vấn đề card archive mồ côi list (card visible luôn nằm trên list `filter=open`). |
+
+Lưu ý ngữ nghĩa tab List: nếu team archive card sau khi Done, point trên card đó không hiện ở tab List. Tab List là "công việc đang mở", không phải "tổng tiến độ". Tab List hiển thị **số thực tế** của card visible, nhãn trung thực, không xử lý đặc biệt theo quy trình.
+
+## 7. Giao diện
 
 ### Board button
 
@@ -180,7 +191,7 @@ Lưu vào `cache.lists` để map listId → tên list.
 │                                                      │
 │  Filter: [Tất cả ▾] [Tuần này] [Tháng này] [Năm]   │
 │                                                      │
-│  [Theo List]  [Theo User]          [🔄 Sync]  ⏱ 5m  │
+│  [Theo List]  [Theo User]      [🔄 Làm mới] ⏱ 14:05 │
 │                                                      │
 │ ┌──────────────────────────────────────────────────┐ │
 │ │ List          Cards   Est   Log   Tiến độ        │ │
@@ -200,7 +211,7 @@ Lưu vào `cache.lists` để map listId → tên list.
 └──────────────────────────────────────────────────────┘
 ```
 
-### Tab "Theo List"
+### Tab "Theo List" (chỉ card visible)
 
 | Cột | Nội dung |
 |---|---|
@@ -214,7 +225,7 @@ Dòng **TỔNG** cố định ở cuối bảng.
 
 Bên dưới bảng: **breakdown theo tuần** (bar chart text-based hoặc div bar). Hiện 4-8 tuần gần nhất, mỗi bar = tổng logged trong tuần đó.
 
-### Tab "Theo User"
+### Tab "Theo User" (tất cả card, gồm archive)
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -254,36 +265,37 @@ Breakdown theo tuần: grouped bar (text-based), mỗi user một màu/pattern. 
 | Tháng này | Ngày 1 → cuối tháng hiện tại |
 | Năm này | 1/1 → 31/12 năm hiện tại |
 
-Filter áp dụng lên `DaySummary.dt`, xử lý client-side. Breakdown tự động điều chỉnh granularity: filter "Hôm nay" → breakdown theo giờ không có (chỉ hiện tổng). Filter "Năm này" → breakdown theo tháng.
+Filter áp dụng lên `LogEntry.date`, xử lý client-side. Breakdown tự động điều chỉnh granularity: "Hôm nay" → chỉ hiện tổng. "Năm này" → breakdown theo tháng.
 
-### Nút Sync
+### Nút Làm mới
 
-- Text: "🔄 Sync"
-- Bên cạnh: "⏱ 5 phút trước" (thời gian tương đối từ `cache.at`)
-- Khi đang sync: "Đang sync... 25/50" (progress)
-- Sync xong: cập nhật data + refresh bảng + cập nhật timestamp
+- Text: "🔄 Làm mới" (fetch lại trong phiên, không cần đóng modal)
+- Bên cạnh: "⏱ 14:05" (giờ fetch của lần tải hiện tại trong phiên)
+- Khi đang tải: "Đang tải..." (+ progress nếu phải phân trang nhiều trang)
+- Tải xong: cập nhật data + refresh bảng + cập nhật timestamp
 
 ### Trạng thái rỗng / lỗi
 
 | Trạng thái | Hiển thị |
 |---|---|
-| Chưa sync lần nào | "Nhấn Sync để tải dữ liệu thống kê" + nút Sync lớn |
+| Chưa cấp quyền | "Cấp quyền đọc board để xem thống kê" + nút Authorize (onboarding, không phải lỗi) |
 | Không có card nào có point | "Board chưa có card nào có point data" |
-| Sync thất bại | Banner đỏ: "Lỗi khi sync: \{message\}. Thử lại?" |
-| Cache quá cũ (>24h) | Nhắc nhẹ: "Dữ liệu đã cũ, nhấn Sync để cập nhật" |
+| Fetch thất bại | Banner đỏ: "Lỗi khi tải: \{message\}. Thử lại?" |
+| Token bị thu hồi (401) | Xoá token cũ, mời authorize lại |
+| Board quá lớn (chạm cap) | Cảnh báo: "Board quá lớn, thống kê có thể chưa đủ card" |
 
-## 7. File mới và file sửa
+## 8. File mới và file sửa
 
 ### File mới
 
 | File | Mô tả |
 |---|---|
 | `dashboard.html` | HTML cho modal dashboard |
-| `src/ui/dashboard.ts` | Logic UI dashboard (tabs, filter, render bảng) |
+| `src/ui/dashboard.ts` | Logic UI dashboard (tabs, filter, render bảng, authorize lazy) |
 | `src/ui/dashboard.css` | Style cho dashboard |
-| `src/core/stats.ts` | Logic tổng hợp: filter theo thời gian, tính tổng theo list/user, breakdown tuần/tháng |
-| `src/core/stats-types.ts` | Types cho StatsCache, DaySummary, etc. |
-| `src/trello/sync.ts` | Sync flow: authorize, fetch cards, fetch pluginData, parse, lưu cache |
+| `src/core/stats.ts` | Logic tổng hợp: filter thời gian, tổng theo list/user, breakdown tuần/tháng, tách phạm vi per-tab |
+| `src/core/stats-types.ts` | Types `CardStat`, `LogEntry`, kết quả tổng hợp |
+| `src/trello/fetch-board.ts` | Bulk fetch: authorize, GET cards `filter=all&pluginData=true`, phân trang, parse → `CardStat[]` |
 | `tests/stats.test.ts` | Unit test cho stats.ts |
 
 ### File sửa
@@ -291,29 +303,38 @@ Filter áp dụng lên `DaySummary.dt`, xử lý client-side. Breakdown tự đ�
 | File | Thay đổi |
 |---|---|
 | `src/connector.ts` | Thêm capability `board-buttons`, thêm appKey/appName vào initialize |
-| `src/trello/trello-types.ts` | Thêm type cho `board` scope, `getRestApi()`, `modal()` |
+| `src/trello/trello-types.ts` | Thêm type cho `getRestApi()`, `modal()` |
 | `src/trello/global.d.ts` | Cập nhật PowerUp interface cho board-buttons |
 | `vite.config.ts` | Thêm `dashboard.html` vào multi-page build |
 
-## 8. Chiến lược kiểm thử
+## 9. Chiến lược kiểm thử
 
 ### Vitest cho lõi thuần
 
-- `stats.ts`: filter theo thời gian (ngày/tuần/tháng/năm), tổng hợp theo list, tổng hợp theo user, breakdown tuần/tháng, edge case (card không estimate, list rỗng, member rời board).
+- `stats.ts`: filter thời gian (ngày/tuần/tháng/năm), tổng theo list, tổng theo user, breakdown tuần/tháng, tách phạm vi per-tab (visible vs all), edge case (card không estimate, list rỗng, member rời board, card archive).
 
 ### Test thủ công trên board thật
 
 - Board-button hiện đúng, click mở modal.
-- Sync: authorize lần đầu, progress bar, lưu cache thành công.
-- Dashboard: 2 tab chuyển đúng, filter thay đổi data, breakdown hiện đúng.
-- Edge case: board rỗng, board 1 card, board nhiều card (>50).
+- Authorize lần đầu (empty state → popup → fetch).
+- Fetch: 1 request, parse đúng, render đúng.
+- Tab User gồm card archive; tab List chỉ visible.
+- Filter thay đổi data, breakdown đúng.
+- Edge: board rỗng, board 1 card, board nhiều card + nhiều archive.
 
-## 9. Quyết định thiết kế đã chốt
+## 10. Quyết định thiết kế đã chốt
 
 | Câu hỏi | Quyết định | Lý do |
 |---|---|---|
 | Hiển thị ở đâu? | Board-button mở modal | API không hỗ trợ inject list header |
-| Lấy data cách nào? | Cache board-scope + sync thủ công | Tránh gọi API mỗi lần mở, kiểm soát được |
-| Cấu trúc cache? | Tổng hợp theo ngày + member | Cân bằng: filter được theo ngày, compact hơn lưu từng entry |
-| Board-scope limit? | 8192 ký tự, rút gọn nếu vượt | Đủ cho ~10-15 card, chiến lược fallback rõ ràng |
-| Cần authorize? | Có, scope read, expiration never | Cần REST API để fetch pluginData cross-card |
+| Lấy data cách nào? | Bulk fetch REST `filter=all&pluginData=true`, fetch tươi mỗi lần | 1 request, đã verify gồm cả archive. Cache thành thừa. |
+| Có cache không? | **Không**. Tổng hợp trong RAM | Fetch rẻ tới mức cache vô nghĩa. Né luôn trần 8192. |
+| Board lớn? | Phân trang `before`/`limit` + guard cảnh báo. Không store ngoài | YAGNI backend. Fetch vài trăm card <3s. |
+| Phạm vi card mỗi tab? | User=tất cả, List=chỉ visible | User cần tích lũy; List là ảnh chụp WIP, né list mồ côi |
+| Authorize? | Per-user, lazy, scope read, expiration never | Không backend nên mỗi người tự cấp; lazy tránh popup dội |
+
+## 11. Mục gác lại (xử lý lúc implement)
+
+1. **Phân trang cap:** verify cap chính xác của `/boards/{id}/cards?filter=all` lúc code (akachan mới 115 card, chưa test tới ngưỡng). Pattern `limit=1000` + `before` chạy đúng dù cap là bao nhiêu (miễn ≤1000).
+2. **Timezone:** filter "hôm nay/tuần này" tính theo giờ local người xem. Team đa múi giờ có thể lệch ranh giới nửa đêm. Edge nhỏ, ghi nhận.
+3. **Lỗi popup "Không tải được dữ liệu card":** quan sát thấy trong phiên grill, có vẻ transient (ghi/đọc card chạy lại bình thường sau khi thêm data test). Bug riêng của popup hiện tại, không thuộc dashboard. Điều tra `src/ui/popup.ts` (init, lines 305-331) nếu tái diễn.

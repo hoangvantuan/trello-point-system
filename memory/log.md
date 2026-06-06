@@ -12,3 +12,5 @@
 ## [2026-06-06] capture | F-006 (new fact entry)
 ## [2026-06-06] capture | F-005 Trello tự render title bar popup, HTML chỉ là thân
 ## [2026-06-06] capture | F-006 bar x/4096 là dung lượng thẻ, không phải tiến độ point
+## [2026-06-06] capture | F-007 (new fact entry)
+## [2026-06-06] capture | F-008 (new fact entry)

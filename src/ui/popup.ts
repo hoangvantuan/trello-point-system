@@ -328,4 +328,15 @@ async function init(): Promise<void> {
   await refresh();
 }
 
-init().catch(() => showBanner('Không tải được dữ liệu card'));
+init().catch((e) => {
+  // Bản cũ nuốt error nên không chẩn đoán được. Phơi bày lỗi thật + context ra console + banner.
+  let ctx: unknown;
+  try {
+    ctx = (t as unknown as { getContext?: () => unknown }).getContext?.();
+  } catch {
+    ctx = undefined;
+  }
+  console.error('[point-system] init failed', { error: e, context: ctx });
+  const msg = e instanceof Error ? e.message : String(e);
+  showBanner(`Không tải được dữ liệu card: ${msg}`);
+});
