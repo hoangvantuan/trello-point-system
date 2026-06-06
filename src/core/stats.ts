@@ -2,7 +2,7 @@
 import { mondayOf, todayLocal } from './dateutil';
 import { roundTotal } from './totals';
 import type {
-  CardStat, DateRange, ListAggregate, ListStat, LogEntry, TimeFilter,
+  CardStat, DateRange, ListAggregate, ListStat, LogEntry, TimeFilter, UserAggregate, UserStat,
 } from './stats-types';
 
 // Khoảng ngày tương ứng filter. 'all' -> null (không lọc).
@@ -84,6 +84,29 @@ export function aggregateByList(
     rows,
     totalCards: rows.reduce((s, r) => s + r.cards, 0),
     totalEstimate: roundTotal(rows.reduce((s, r) => s + r.estimate, 0)),
+    totalLogged: roundTotal(rows.reduce((s, r) => s + r.logged, 0)),
+  };
+}
+
+// Tab "Theo User": TẤT CẢ card (gồm archive). Đóng góp tích lũy phải đủ.
+export function aggregateByUser(cards: CardStat[], range: DateRange | null): UserAggregate {
+  const acc = new Map<string, { fullName: string; entries: number; logged: number }>();
+  for (const card of cards) {
+    for (const e of card.entries) {
+      if (!inRange(e.date, range)) continue;
+      const row = acc.get(e.memberId) ?? { fullName: e.fullName, entries: 0, logged: 0 };
+      if (e.fullName) row.fullName = e.fullName; // giữ tên mới nhất không rỗng
+      row.entries += 1;
+      row.logged = roundTotal(row.logged + e.point);
+      acc.set(e.memberId, row);
+    }
+  }
+  const rows: UserStat[] = [...acc.entries()]
+    .map(([memberId, r]) => ({ memberId, fullName: r.fullName, entries: r.entries, logged: r.logged }))
+    .sort((a, b) => b.logged - a.logged);
+  return {
+    rows,
+    totalEntries: rows.reduce((s, r) => s + r.entries, 0),
     totalLogged: roundTotal(rows.reduce((s, r) => s + r.logged, 0)),
   };
 }

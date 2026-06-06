@@ -1,6 +1,8 @@
 // tests/core/stats.test.ts
 import { describe, expect, it } from 'vitest';
-import { aggregateByList, collectEntries, inRange, periodRange } from '../../src/core/stats';
+import {
+  aggregateByList, aggregateByUser, collectEntries, inRange, periodRange,
+} from '../../src/core/stats';
 import type { CardStat } from '../../src/core/stats-types';
 
 const cards: CardStat[] = [
@@ -99,5 +101,30 @@ describe('aggregateByList', () => {
     expect(agg.rows).toEqual([
       { idList: 'L1', name: 'To Do', cards: 1, estimate: 5, logged: 0 },
     ]);
+  });
+});
+
+describe('aggregateByUser', () => {
+  it('gồm card archive, sắp theo logged giảm dần', () => {
+    const agg = aggregateByUser(cards, null);
+    expect(agg.rows).toEqual([
+      { memberId: 'm1', fullName: 'Tuấn', entries: 2, logged: 5 },
+      { memberId: 'm2', fullName: 'Mai', entries: 1, logged: 1.5 },
+    ]);
+    expect(agg.totalEntries).toBe(3);
+    expect(agg.totalLogged).toBe(6.5);
+  });
+
+  it('range lọc entry theo ngày', () => {
+    const agg = aggregateByUser(cards, { start: '2026-06-01', end: '2026-06-30' });
+    expect(agg.rows).toEqual([
+      { memberId: 'm1', fullName: 'Tuấn', entries: 1, logged: 3 },
+      { memberId: 'm2', fullName: 'Mai', entries: 1, logged: 1.5 },
+    ]);
+  });
+
+  it('không entry -> mảng rỗng, tổng 0', () => {
+    const agg = aggregateByUser([], null);
+    expect(agg).toEqual({ rows: [], totalEntries: 0, totalLogged: 0 });
   });
 });
