@@ -35,3 +35,20 @@ export function validateDate(input: string, today: string): DateValidationResult
   }
   return { ok: true };
 }
+
+export type EstimateValidationResult =
+  | { ok: true; value: number | null }
+  | { ok: false; error: string };
+
+// Estimate tùy chọn: rỗng -> null (xóa). Có số: >0, <=100.
+export function validateEstimate(input: string): EstimateValidationResult {
+  const s = input.trim();
+  if (s === '') return { ok: true, value: null };
+
+  const value = Number(s);
+  if (!Number.isFinite(value)) return { ok: false, error: 'Estimate phải là số' };
+  if (value <= 0) return { ok: false, error: 'Estimate phải lớn hơn 0' };
+  if (value > 100) return { ok: false, error: 'Estimate tối đa 100' };
+
+  return { ok: true, value };
+}

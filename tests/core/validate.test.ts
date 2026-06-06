@@ -67,3 +67,33 @@ describe('validateDate', () => {
     expect(validateDate('2026-6-6', today).ok).toBe(false);
   });
 });
+
+import { validateEstimate } from '../../src/core/validate';
+
+describe('validateEstimate', () => {
+  it('rỗng nghĩa là xóa estimate (value null)', () => {
+    expect(validateEstimate('')).toEqual({ ok: true, value: null });
+    expect(validateEstimate('   ')).toEqual({ ok: true, value: null });
+  });
+
+  it('nhận số hợp lệ', () => {
+    expect(validateEstimate('8')).toEqual({ ok: true, value: 8 });
+    expect(validateEstimate('2.5')).toEqual({ ok: true, value: 2.5 });
+  });
+
+  it('chặn âm', () => {
+    expect(validateEstimate('-1').ok).toBe(false);
+  });
+
+  it('chặn 0', () => {
+    expect(validateEstimate('0').ok).toBe(false);
+  });
+
+  it('chặn > 100', () => {
+    expect(validateEstimate('101').ok).toBe(false);
+  });
+
+  it('chặn không phải số', () => {
+    expect(validateEstimate('abc').ok).toBe(false);
+  });
+});
