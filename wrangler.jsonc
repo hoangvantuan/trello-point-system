@@ -1,0 +1,9 @@
+{
+  // Trello Point System được deploy như static assets (không có Worker script).
+  // `npm run build` sinh thư mục dist/, wrangler upload toàn bộ làm static site.
+  "name": "trello-point-system",
+  "compatibility_date": "2026-06-06",
+  "assets": {
+    "directory": "./dist"
+  }
+}
