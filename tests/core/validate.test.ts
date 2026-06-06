@@ -43,3 +43,27 @@ describe('validatePoint', () => {
     expect(validatePoint('1.25').ok).toBe(false);
   });
 });
+
+import { validateDate } from '../../src/core/validate';
+
+describe('validateDate', () => {
+  const today = '2026-06-06';
+
+  it('nhận ngày hôm nay', () => {
+    expect(validateDate('2026-06-06', today)).toEqual({ ok: true });
+  });
+
+  it('nhận ngày quá khứ bất kỳ', () => {
+    expect(validateDate('2020-01-01', today)).toEqual({ ok: true });
+  });
+
+  it('chặn ngày tương lai', () => {
+    expect(validateDate('2026-06-07', today).ok).toBe(false);
+  });
+
+  it('chặn định dạng sai', () => {
+    expect(validateDate('06/06/2026', today).ok).toBe(false);
+    expect(validateDate('', today).ok).toBe(false);
+    expect(validateDate('2026-6-6', today).ok).toBe(false);
+  });
+});

@@ -20,3 +20,18 @@ export function validatePoint(input: string): ValidationResult {
 
   return { ok: true, value };
 }
+
+export type DateValidationResult = { ok: true } | { ok: false; error: string };
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+// Kiểm tra ngày: đúng định dạng YYYY-MM-DD và không vượt quá hôm nay.
+export function validateDate(input: string, today: string): DateValidationResult {
+  if (!DATE_RE.test(input)) {
+    return { ok: false, error: 'Ngày phải dạng YYYY-MM-DD' };
+  }
+  if (input > today) {
+    return { ok: false, error: 'Không log cho ngày tương lai' };
+  }
+  return { ok: true };
+}
