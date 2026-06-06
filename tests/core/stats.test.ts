@@ -1,6 +1,6 @@
 // tests/core/stats.test.ts
 import { describe, expect, it } from 'vitest';
-import { collectEntries, inRange, periodRange } from '../../src/core/stats';
+import { aggregateByList, collectEntries, inRange, periodRange } from '../../src/core/stats';
 import type { CardStat } from '../../src/core/stats-types';
 
 const cards: CardStat[] = [
@@ -62,5 +62,42 @@ describe('collectEntries', () => {
   it('áp range lọc theo ngày', () => {
     const out = collectEntries(cards, { start: '2026-05-01', end: '2026-05-31' }, false);
     expect(out.map((e) => e.point)).toEqual([2]);
+  });
+});
+
+const lists = [
+  { id: 'L1', name: 'To Do' },
+  { id: 'L2', name: 'Done' },
+];
+
+describe('aggregateByList', () => {
+  it('chỉ tính card visible, gộp theo list, giữ thứ tự lists', () => {
+    const agg = aggregateByList(cards, lists, null);
+    expect(agg.rows).toEqual([
+      { idList: 'L1', name: 'To Do', cards: 1, estimate: 5, logged: 4.5 },
+    ]);
+    expect(agg.totalCards).toBe(1);
+    expect(agg.totalEstimate).toBe(5);
+    expect(agg.totalLogged).toBe(4.5);
+  });
+
+  it('card không estimate vẫn được đếm nếu có entry', () => {
+    const visibleNoEst: CardStat[] = [
+      {
+        id: 'cC', idShort: 3, name: 'C', idList: 'L2', closed: false, estimate: null,
+        entries: [{ memberId: 'm1', fullName: 'Tuấn', date: '2026-06-06', point: 2 }],
+      },
+    ];
+    const agg = aggregateByList(visibleNoEst, lists, null);
+    expect(agg.rows).toEqual([
+      { idList: 'L2', name: 'Done', cards: 1, estimate: 0, logged: 2 },
+    ]);
+  });
+
+  it('range lọc logged nhưng card vẫn được đếm nếu có estimate', () => {
+    const agg = aggregateByList(cards, lists, { start: '2026-01-01', end: '2026-01-31' });
+    expect(agg.rows).toEqual([
+      { idList: 'L1', name: 'To Do', cards: 1, estimate: 5, logged: 0 },
+    ]);
   });
 });
