@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dashboard Point Stats — Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- CSS sản phẩm thật: preview luôn khớp với dashboard -->
+    <link rel="stylesheet" href="../../../src/ui/dashboard.css" />
+    <style>
+      /* Chrome riêng của preview, KHÔNG thuộc sản phẩm */
+      body { background: var(--desk); padding: 28px 0 60px; }
+      .demo-label {
+        max-width: 720px;
+        margin: 30px auto 8px;
+        padding: 0 24px;
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.6px;
+        color: #8a8472;
+      }
+      .demo-label:first-child { margin-top: 0; }
+      .frame {
+        max-width: 760px;
+        margin: 0 auto;
+        background: var(--paper);
+        border: 1px solid var(--rule-2);
+        border-radius: 12px;
+        box-shadow: 0 18px 40px -24px rgba(35, 34, 28, 0.6);
+        overflow: hidden;
+      }
+      .frame .app { min-height: auto; }
+      .row2 { display: flex; flex-wrap: wrap; gap: 18px; max-width: 760px; margin: 0 auto; }
+      .row2 .mini { flex: 1 1 240px; }
+      .row2 .frame { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <!-- ============ TAB THEO LIST ============ -->
+    <div class="demo-label">Tab “Theo List” · filter Tất cả</div>
+    <div class="frame">
+      <div class="app">
+        <header class="dash-head">
+          <div class="title">
+            <h1>Sổ cái điểm</h1>
+            <span class="sub">Point Stats · thống kê board</span>
+          </div>
+          <div class="head-right">
+            <span class="clock">⏱ 14:05</span>
+            <button class="btn-ghost">↻ Làm mới</button>
+          </div>
+        </header>
+
+        <nav class="filters">
+          <button class="fbtn active">Tất cả</button>
+          <button class="fbtn">Hôm nay</button>
+          <button class="fbtn">Tuần này</button>
+          <button class="fbtn">Tháng này</button>
+          <button class="fbtn">Năm này</button>
+        </nav>
+
+        <div class="tabs">
+          <button class="tab active">Theo List</button>
+          <button class="tab">Theo User</button>
+        </div>
+
+        <section class="content">
+          <div class="sheet">
+            <table class="stat">
+              <thead>
+                <tr>
+                  <th>List</th><th class="num">Cards</th><th class="num">Est</th>
+                  <th class="num">Log</th><th>Tiến độ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>To Do</td><td class="num">5</td><td class="num">20</td><td class="num">0</td>
+                  <td class="prog"><span class="pbar"><span style="width:0%"></span></span><span class="pct">0%</span></td>
+                </tr>
+                <tr>
+                  <td>In Progress</td><td class="num">3</td><td class="num">15</td><td class="num">8</td>
+                  <td class="prog"><span class="pbar"><span style="width:53%"></span></span><span class="pct">53%</span></td>
+                </tr>
+                <tr>
+                  <td>Done</td><td class="num">8</td><td class="num">30</td><td class="num">30</td>
+                  <td class="prog"><span class="pbar"><span style="width:100%"></span></span><span class="pct">100%</span></td>
+                </tr>
+                <tr>
+                  <td>Backlog</td><td class="num">4</td><td class="num">0</td><td class="num">2</td>
+                  <td class="prog"><span class="muted">—</span></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>Tổng</td><td class="num">20</td><td class="num">65</td><td class="num">40</td>
+                  <td class="prog"><span class="pbar"><span style="width:62%"></span></span><span class="pct">62%</span></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="breakdown sheet">
+            <div class="bk-title">Breakdown theo kỳ</div>
+            <div class="bk-row">
+              <span class="bk-label">W22</span>
+              <span class="bk-bar" style="width:67%"><span style="width:100%;background:var(--green)"></span></span>
+              <span class="bk-val">12</span>
+            </div>
+            <div class="bk-row">
+              <span class="bk-label">W23</span>
+              <span class="bk-bar" style="width:100%"><span style="width:100%;background:var(--green)"></span></span>
+              <span class="bk-val">18</span>
+            </div>
+            <div class="bk-row">
+              <span class="bk-label">W24</span>
+              <span class="bk-bar" style="width:44%"><span style="width:100%;background:var(--green)"></span></span>
+              <span class="bk-val">8</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ============ TAB THEO USER ============ -->
+    <div class="demo-label">Tab “Theo User” · gồm card archive · breakdown xếp chồng theo user</div>
+    <div class="frame">
+      <div class="app">
+        <header class="dash-head">
+          <div class="title">
+            <h1>Sổ cái điểm</h1>
+            <span class="sub">Point Stats · thống kê board</span>
+          </div>
+          <div class="head-right">
+            <span class="clock">⏱ 14:05</span>
+            <button class="btn-ghost">↻ Làm mới</button>
+          </div>
+        </header>
+
+        <nav class="filters">
+          <button class="fbtn">Tất cả</button>
+          <button class="fbtn">Hôm nay</button>
+          <button class="fbtn active">Tuần này</button>
+          <button class="fbtn">Tháng này</button>
+          <button class="fbtn">Năm này</button>
+        </nav>
+
+        <div class="tabs">
+          <button class="tab">Theo List</button>
+          <button class="tab active">Theo User</button>
+        </div>
+
+        <section class="content">
+          <div class="sheet">
+            <table class="stat">
+              <thead>
+                <tr><th>User</th><th class="num">Entries</th><th class="num">Tổng Log</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="swatch" style="background:#2c6e49"></span>Tuấn</td>
+                  <td class="num">12</td><td class="num">24.5</td>
+                </tr>
+                <tr>
+                  <td><span class="swatch" style="background:#b07a16"></span>Mai</td>
+                  <td class="num">8</td><td class="num">15.0</td>
+                </tr>
+                <tr>
+                  <td><span class="swatch" style="background:#3a6ea5"></span>Khoa</td>
+                  <td class="num">3</td><td class="num">6.0</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td>Tổng</td><td class="num">23</td><td class="num">45.5</td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="breakdown sheet">
+            <div class="bk-title">Breakdown theo kỳ</div>
+            <div class="bk-row">
+              <span class="bk-label">W22</span>
+              <span class="bk-bar" style="width:67%">
+                <span style="width:50%;background:#2c6e49"></span>
+                <span style="width:40%;background:#b07a16"></span>
+                <span style="width:10%;background:#3a6ea5"></span>
+              </span>
+              <span class="bk-val">10</span>
+            </div>
+            <div class="bk-row">
+              <span class="bk-label">W23</span>
+              <span class="bk-bar" style="width:100%">
+                <span style="width:47%;background:#2c6e49"></span>
+                <span style="width:40%;background:#b07a16"></span>
+                <span style="width:13%;background:#3a6ea5"></span>
+              </span>
+              <span class="bk-val">15</span>
+            </div>
+            <div class="bk-row">
+              <span class="bk-label">W24</span>
+              <span class="bk-bar" style="width:33%">
+                <span style="width:60%;background:#2c6e49"></span>
+                <span style="width:40%;background:#b07a16"></span>
+              </span>
+              <span class="bk-val">5</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ============ CÁC TRẠNG THÁI ============ -->
+    <div class="demo-label">Trạng thái · cấp quyền / rỗng / lỗi / cảnh báo board lớn</div>
+    <div class="row2">
+      <div class="mini">
+        <div class="frame">
+          <div class="app">
+            <section class="state">
+              <p>Cấp quyền đọc board để mở sổ cái thống kê.</p>
+              <button class="btn-primary">Cấp quyền &amp; tải</button>
+            </section>
+          </div>
+        </div>
+      </div>
+      <div class="mini">
+        <div class="frame">
+          <div class="app">
+            <section class="state empty-note">Board chưa có card nào có point data.</section>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row2" style="margin-top:18px">
+      <div class="mini">
+        <div class="frame">
+          <div class="app">
+            <div class="warn">⚠ Board quá lớn, thống kê có thể chưa đủ card.</div>
+            <section class="state error">
+              <p>Lỗi khi tải: token bị thu hồi.</p>
+              <button class="btn-primary">Thử lại</button>
+            </section>
+          </div>
+        </div>
+      </div>
+      <div class="mini">
+        <div class="frame">
+          <div class="app">
+            <section class="state">Đang tải sổ…</section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

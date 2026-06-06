@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <title>Point Stats Dashboard</title>
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/ui/dashboard.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="dash-head">
+        <div class="title">
+          <h1>Sổ cái điểm</h1>
+          <span class="sub">Point Stats · thống kê board</span>
+        </div>
+        <div class="head-right">
+          <span id="fetched-at" class="clock"></span>
+          <button id="refresh" class="btn-ghost">↻ Làm mới</button>
+        </div>
+      </header>
+
+      <nav id="filters" class="filters" aria-label="Bộ lọc thời gian"></nav>
+
+      <div id="tabs" class="tabs" role="tablist">
+        <button class="tab" data-tab="list" role="tab">Theo List</button>
+        <button class="tab" data-tab="user" role="tab">Theo User</button>
+      </div>
+
+      <div id="truncated" class="warn hidden">
+        ⚠ Board quá lớn, thống kê có thể chưa đủ card.
+      </div>
+
+      <!-- Các trạng thái loại trừ nhau -->
+      <section id="state-loading" class="state hidden">Đang tải sổ…</section>
+
+      <section id="state-auth" class="state hidden">
+        <p>Cấp quyền đọc board để mở sổ cái thống kê.</p>
+        <button id="authorize" class="btn-primary">Cấp quyền &amp; tải</button>
+      </section>
+
+      <section id="state-empty" class="state empty-note hidden">
+        Board chưa có card nào có point data.
+      </section>
+
+      <section id="state-error" class="state error hidden">
+        <p id="error-msg"></p>
+        <button id="retry" class="btn-primary">Thử lại</button>
+      </section>
+
+      <section id="content" class="content hidden">
+        <div id="table-host" class="sheet"></div>
+        <div id="breakdown" class="breakdown sheet"></div>
+      </section>
+    </div>
+    <script type="module" src="/src/ui/dashboard.ts"></script>
+  </body>
+</html>
