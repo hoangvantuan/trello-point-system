@@ -1,9 +1,10 @@
 // tests/core/stats.test.ts
 import { describe, expect, it } from 'vitest';
 import {
-  aggregateByList, aggregateByUser, collectEntries, inRange, periodRange,
+  aggregateByList, aggregateByUser, breakdown, collectEntries,
+  granularityFor, inRange, periodRange,
 } from '../../src/core/stats';
-import type { CardStat } from '../../src/core/stats-types';
+import type { CardStat, LogEntry } from '../../src/core/stats-types';
 
 const cards: CardStat[] = [
   {
@@ -126,5 +127,51 @@ describe('aggregateByUser', () => {
   it('không entry -> mảng rỗng, tổng 0', () => {
     const agg = aggregateByUser([], null);
     expect(agg).toEqual({ rows: [], totalEntries: 0, totalLogged: 0 });
+  });
+});
+
+describe('granularityFor', () => {
+  it('today -> none, year -> month, còn lại -> week', () => {
+    expect(granularityFor('today')).toBe('none');
+    expect(granularityFor('year')).toBe('month');
+    expect(granularityFor('all')).toBe('week');
+    expect(granularityFor('week')).toBe('week');
+    expect(granularityFor('month')).toBe('week');
+  });
+});
+
+describe('breakdown', () => {
+  const entries: LogEntry[] = [
+    { memberId: 'm1', fullName: 'Tuấn', date: '2026-06-06', point: 3 },
+    { memberId: 'm1', fullName: 'Tuấn', date: '2026-06-05', point: 2 },
+    { memberId: 'm2', fullName: 'Mai', date: '2026-05-25', point: 4 },
+  ];
+
+  it('none -> rỗng', () => {
+    expect(breakdown(entries, 'none', 8)).toEqual([]);
+  });
+
+  it('week -> gộp theo tuần, sort tăng dần theo key', () => {
+    const b = breakdown(entries, 'week', 8);
+    expect(b.map((x) => x.label)).toEqual(['W22', 'W23']);
+    expect(b.map((x) => x.total)).toEqual([4, 5]);
+    expect(b[1]!.byUser).toEqual({ m1: 5 });
+    expect(b[0]!.byUser).toEqual({ m2: 4 });
+  });
+
+  it('month -> gộp theo tháng', () => {
+    const b = breakdown(entries, 'month', 8);
+    expect(b.map((x) => x.label)).toEqual(['T5', 'T6']);
+    expect(b.map((x) => x.total)).toEqual([4, 5]);
+  });
+
+  it('maxBuckets giữ N kỳ gần nhất (cuối mảng)', () => {
+    const many: LogEntry[] = [
+      { memberId: 'm1', fullName: 'A', date: '2026-05-04', point: 1 }, // W19
+      { memberId: 'm1', fullName: 'A', date: '2026-05-11', point: 1 }, // W20
+      { memberId: 'm1', fullName: 'A', date: '2026-05-18', point: 1 }, // W21
+    ];
+    const b = breakdown(many, 'week', 2);
+    expect(b.map((x) => x.label)).toEqual(['W20', 'W21']);
   });
 });

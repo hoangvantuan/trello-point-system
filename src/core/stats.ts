@@ -1,8 +1,9 @@
 // src/core/stats.ts
-import { mondayOf, todayLocal } from './dateutil';
+import { monthBucket, mondayOf, todayLocal, weekBucket } from './dateutil';
 import { roundTotal } from './totals';
 import type {
-  CardStat, DateRange, ListAggregate, ListStat, LogEntry, TimeFilter, UserAggregate, UserStat,
+  BreakdownBucket, CardStat, DateRange, Granularity, ListAggregate, ListStat,
+  LogEntry, TimeFilter, UserAggregate, UserStat,
 } from './stats-types';
 
 // Khoảng ngày tương ứng filter. 'all' -> null (không lọc).
@@ -109,4 +110,33 @@ export function aggregateByUser(cards: CardStat[], range: DateRange | null): Use
     totalEntries: rows.reduce((s, r) => s + r.entries, 0),
     totalLogged: roundTotal(rows.reduce((s, r) => s + r.logged, 0)),
   };
+}
+
+// Độ mịn breakdown theo filter. Hôm nay -> chỉ tổng (none). Năm -> theo tháng. Còn lại -> theo tuần.
+export function granularityFor(filter: TimeFilter): Granularity {
+  if (filter === 'today') return 'none';
+  if (filter === 'year') return 'month';
+  return 'week';
+}
+
+// Gom entries thành các kỳ, sort tăng dần theo key, giữ tối đa maxBuckets kỳ gần nhất.
+export function breakdown(
+  entries: LogEntry[],
+  granularity: Granularity,
+  maxBuckets: number
+): BreakdownBucket[] {
+  if (granularity === 'none') return [];
+  const bucketOf = granularity === 'week' ? weekBucket : monthBucket;
+  const byKey = new Map<string, BreakdownBucket>();
+  for (const e of entries) {
+    const { key, label } = bucketOf(e.date);
+    const b = byKey.get(key) ?? { key, label, total: 0, byUser: {} };
+    b.total = roundTotal(b.total + e.point);
+    b.byUser[e.memberId] = roundTotal((b.byUser[e.memberId] ?? 0) + e.point);
+    byKey.set(key, b);
+  }
+  const sorted = [...byKey.values()].sort((a, b) =>
+    a.key < b.key ? -1 : a.key > b.key ? 1 : 0
+  );
+  return sorted.slice(Math.max(0, sorted.length - maxBuckets));
 }
