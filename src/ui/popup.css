@@ -27,7 +27,7 @@
 
 body {
   margin: 0;
-  width: 312px;
+  width: 100%;
   font-family: var(--sans);
   font-size: 13px;
   line-height: 1.45;
@@ -37,11 +37,21 @@ body {
 }
 
 #app {
-  padding: 12px 13px 10px;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 18px 22px 14px;
   /* nét giấy kẻ ngang rất mờ làm nền */
   background-image: linear-gradient(var(--rule) 1px, transparent 1px);
   background-size: 100% 28px;
   background-position: 0 -1px;
+}
+
+/* hai cột: trái ghi point, phải lịch sử. Tự co về 1 cột khi modal hẹp. */
+.cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 8px 28px;
+  align-items: start;
 }
 
 section { animation: rise 0.42s cubic-bezier(0.22, 1, 0.36, 1) both; }

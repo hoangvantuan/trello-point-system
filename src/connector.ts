@@ -28,10 +28,11 @@ TrelloPowerUp.initialize({
         title: 'Point',
         text: text ? `Log point · ${text}` : 'Log point',
         callback: (t2: TrelloT) => {
-          (t2 as unknown as { popup: (o: object) => void }).popup({
+          (t2 as unknown as { modal: (o: object) => void }).modal({
             title: 'Point System',
             url: './popup.html',
-            height: 480,
+            fullscreen: false,
+            height: 560,
           });
         },
       },
