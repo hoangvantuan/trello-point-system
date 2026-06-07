@@ -37,7 +37,8 @@ async function refresh(): Promise<void> {
   renderEstimateField();
   renderCapacity();
   renderHistory();
-  await t.sizeTo?.('#app');
+  // Không gọi t.sizeTo ở đây: popup đã chuyển sang t.modal (height cố định),
+  // modal không có resize handler nên sizeTo ném PostMessageIO:NotHandled.
 }
 
 function renderEstimateField(): void {

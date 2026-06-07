@@ -14,3 +14,5 @@
 ## [2026-06-06] capture | F-006 bar x/4096 là dung lượng thẻ, không phải tiến độ point
 ## [2026-06-06] capture | F-007 (new fact entry)
 ## [2026-06-06] capture | F-008 (new fact entry)
+## [2026-06-07] capture | F-009 (new fact entry)
+## [2026-06-07] update | F-005 cập nhật popup → modal, liên kết F-009 (sizeTo không dùng cho modal)
