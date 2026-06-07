@@ -13,7 +13,7 @@ interface DetailBadgeResult {
 
 interface BoardButtonResult {
   text: string;
-  icon?: { dark: string; light: string };
+  icon: { dark: string; light: string };
   condition?: string;
   callback?: (t: TrelloT) => void;
 }
@@ -24,6 +24,7 @@ interface PowerUpOptions {
 }
 
 interface PowerUp {
+  iframe(options?: PowerUpOptions): TrelloT;
   initialize(
     capabilities: {
       'card-badges'?: (t: TrelloT) => Promise<BadgeResult[]>;

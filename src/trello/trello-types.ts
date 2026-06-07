@@ -29,6 +29,6 @@ export interface TrelloT {
     fullscreen?: boolean;
     height?: number;
   }): void;
-  getRestApi?(): TrelloRestApi;
+  getRestApi?(): TrelloRestApi | Promise<TrelloRestApi>;
   getContext?(): { board: string; card?: string; member?: string };
 }

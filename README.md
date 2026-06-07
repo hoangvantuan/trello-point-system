@@ -21,6 +21,7 @@ Trello Point System biến mỗi thẻ Trello thành một sổ ghi point kiểu
 - **Log point per-member.** Mỗi người ghi point của riêng mình. Tự nhận diện qua tài khoản Trello, không nhập tay tên.
 - **Lịch sử theo ngày.** Gộp log của cả nhóm, nhóm theo ngày, có tổng phụ mỗi ngày, ngày mới nhất lên đầu.
 - **Badge trên thẻ.** Hiện `🎯 đã_log/estimate` ngay mặt thẻ. Tô cam khi log vượt estimate.
+- **Dashboard cấp board.** Nút **Point Stats** trên thanh board mở thống kê point theo list và theo user.
 - **Không va chạm.** Mỗi người chỉ ghi key của chính mình, hai người log cùng lúc không đè nhau.
 - **Quyền rõ ràng.** Chỉ chủ nhân sửa/xóa log của mình. Xóa có xác nhận một bước nhẹ tại chỗ.
 - **Cảnh báo dung lượng.** Thanh % cho biết thẻ đã dùng bao nhiêu trong trần 4096 ký tự của Trello.
@@ -105,7 +106,7 @@ npm run test:watch # test ở chế độ watch
 npm run build      # tsc --noEmit + vite build, sinh thư mục dist/
 ```
 
-`dist/` chứa file tĩnh (`index.html`, `popup.html` và assets) sẵn sàng deploy.
+`dist/` chứa file tĩnh (`index.html`, `popup.html`, `dashboard.html`, icon và assets) sẵn sàng deploy.
 
 ## Triển khai
 
@@ -120,15 +121,20 @@ Hoặc nối repo với **Cloudflare Workers Builds**: mỗi lần `git push`, C
 ### Đăng ký Power-Up trên Trello
 
 1. Vào [trello.com/power-ups/admin](https://trello.com/power-ups/admin), tạo một Power-Up mới (private nội bộ).
-2. Đặt **Connector URL**  đã deploy, ví dụ `https://trello-point-system.<account>.workers.dev`.
-3. Bật capability `**card-badges**` và `**card-detail-badges**`.
-4. Thêm Power-Up vào board, mở một thẻ rồi bấm nút **Log point** để bắt đầu.
+2. Đặt **Connector URL** đã deploy, ví dụ `https://trello-point-system.<account>.workers.dev/index.html`.
+3. Bật capability `**card-badges**`, `**card-detail-badges**` và `**board-buttons**`.
+4. Thêm Power-Up vào board. Trên thanh board sẽ có nút **Point Stats** để mở dashboard.
+5. Mở một thẻ rồi bấm nút **Log point** để ghi point.
+
+> [!NOTE]
+>
+> Nút **Point Stats** chỉ hiện với member có quyền sửa board. Nếu vừa bật thêm `board-buttons`, hãy reload Trello hoặc gỡ rồi bật lại Power-Up trên board.
 
 ## Cấu trúc thư mục
 
 ```
 src/
-├── connector.ts        # đăng ký capability badge với Trello SDK
+├── connector.ts        # đăng ký badge và board button với Trello SDK
 ├── core/               # lõi logic thuần (test bằng Vitest)
 │   ├── badge.ts        #   định dạng text + màu badge
 │   ├── capacity.ts     #   tính % dung lượng so với trần 4096
@@ -159,4 +165,3 @@ docs/superpowers/       # spec thiết kế + plan triển khai
 | Test lõi     | Vitest                                          |
 | Host         | Cloudflare Workers (static assets)              |
 | Backend      | Không, dữ liệu nằm trong card pluginData        |
-

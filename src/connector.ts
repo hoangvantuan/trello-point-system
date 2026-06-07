@@ -5,6 +5,10 @@ import { loadCard } from './trello/storage';
 import type { TrelloT } from './trello/trello-types';
 
 const ICON = '🎯';
+const DASHBOARD_BUTTON_ICON = {
+  dark: new URL('/icons/dashboard-light.svg', globalThis.location.origin).toString(),
+  light: new URL('/icons/dashboard-dark.svg', globalThis.location.origin).toString(),
+};
 
 async function computeBadgeText(t: TrelloT): Promise<string | null> {
   const card = await loadCard(t);
@@ -48,7 +52,8 @@ TrelloPowerUp.initialize(
 
     'board-buttons': async () => [
       {
-        text: '📊 Point Stats',
+        text: 'Point Stats',
+        icon: DASHBOARD_BUTTON_ICON,
         condition: 'edit', // chỉ member có quyền edit board mới thấy
         callback: (t: TrelloT) => {
           t.modal?.({

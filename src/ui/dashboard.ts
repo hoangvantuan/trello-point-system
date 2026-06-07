@@ -1,13 +1,16 @@
-import { APP_KEY, PLUGIN_ID } from '../config';
+import { APP_KEY, APP_NAME, PLUGIN_ID } from '../config';
 import {
   aggregateByList, aggregateByUser, breakdown, collectEntries,
   granularityFor, periodRange,
 } from '../core/stats';
 import type { BreakdownBucket, TimeFilter } from '../core/stats-types';
 import { fetchBoardStats, UnauthorizedError, type BoardStats } from '../trello/fetch-board';
-import type { TrelloT } from '../trello/trello-types';
+import type { TrelloRestApi } from '../trello/trello-types';
 
-const t = (window.TrelloPowerUp as unknown as { iframe: () => TrelloT }).iframe();
+const t = window.TrelloPowerUp.iframe({
+  appKey: APP_KEY,
+  appName: APP_NAME,
+});
 
 const FILTERS: { value: TimeFilter; label: string }[] = [
   { value: 'all', label: 'Tất cả' },
@@ -55,19 +58,24 @@ function boardId(): string {
   return ctx.board;
 }
 
+async function restApiClient(): Promise<TrelloRestApi | null> {
+  return (await t.getRestApi?.()) ?? null;
+}
+
 async function load(): Promise<void> {
   if (loading) return;
   loading = true;
   showOnly('state-loading');
   try {
-    const restApi = t.getRestApi?.();
+    const restApi = await restApiClient();
     if (!restApi) throw new Error('REST API không khả dụng');
     data = await fetchBoardStats(restApi, boardId(), PLUGIN_ID, APP_KEY);
     fetchedAt = new Date();
     render();
   } catch (e) {
     if (e instanceof UnauthorizedError) {
-      await t.getRestApi?.().clearToken();
+      const restApi = await restApiClient();
+      await restApi?.clearToken();
       showOnly('state-auth');
     } else {
       $('error-msg').textContent = `Lỗi khi tải: ${e instanceof Error ? e.message : String(e)}`;
@@ -198,9 +206,9 @@ function buildControls(): void {
 
 async function init(): Promise<void> {
   buildControls();
-  const restApi = t.getRestApi?.();
+  const restApi = await restApiClient();
   if (!restApi) {
-    $('error-msg').textContent = 'REST API không khả dụng (thiếu appKey khi initialize?)';
+    $('error-msg').textContent = 'REST API không khả dụng từ dashboard iframe';
     showOnly('state-error');
     return;
   }
