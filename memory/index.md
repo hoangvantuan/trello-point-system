@@ -22,3 +22,4 @@
 | F-008 | pluginData sống sót qua archive; filter=visible loại card archive | raw | trello, power-up, rest-api, pluginData, archive | [↗](entries/F-008.md) |
 | F-009 | t.sizeTo() chỉ dùng cho t.popup(); trong t.modal() nó ném PostMessageIO:NotHandled | raw | trello, power-up, modal, popup, sizeTo, debug | [↗](entries/F-009.md) |
 | F-010 | Trello REST API helper cần appKey/appName ở cả initialize và iframe | raw | trello, power-up, rest-api, dashboard, iframe, appKey | [↗](entries/F-010.md) |
+| F-011 | Dashboard responsive cần giữ bảng cuộn trong sheet và cho breakdown bar co lại | raw | trello, power-up, dashboard, ui, responsive, css, debug | [↗](entries/F-011.md) |
