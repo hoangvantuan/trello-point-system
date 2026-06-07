@@ -53,9 +53,9 @@ export async function fetchBoardStats(
   const auth = `key=${appKey}&token=${token}`;
 
   const fetchPage = async (before: string | null): Promise<RawCard[]> => {
-    const beforeParam = before ? `&before=${before}` : '';
+    const beforeParam = before ? `&before=${encodeURIComponent(before)}` : '';
     const url =
-      `${API}/boards/${boardId}/cards?filter=all&pluginData=true` +
+      `${API}/boards/${encodeURIComponent(boardId)}/cards?filter=all&pluginData=true` +
       `&fields=${FIELDS}&limit=${PAGE_LIMIT}${beforeParam}&${auth}`;
     const res = await fetch(url);
     if (res.status === 401) throw new UnauthorizedError();
@@ -65,7 +65,7 @@ export async function fetchBoardStats(
 
   const { cards: rawCards, truncated } = await collectAllRawCards(fetchPage);
 
-  const listRes = await fetch(`${API}/boards/${boardId}/lists?filter=open&fields=id,name&${auth}`);
+  const listRes = await fetch(`${API}/boards/${encodeURIComponent(boardId)}/lists?filter=open&fields=id,name&${auth}`);
   if (listRes.status === 401) throw new UnauthorizedError();
   if (!listRes.ok) throw new Error(`Lỗi tải list (HTTP ${listRes.status})`);
   const lists = (await listRes.json()) as { id: string; name: string }[];

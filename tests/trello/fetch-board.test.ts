@@ -28,4 +28,10 @@ describe('collectAllRawCards', () => {
     expect(res.truncated).toBe(false);
     expect(befores).toEqual([null, `a${PAGE_LIMIT - 1}`]);
   });
+
+  it('trang đầu rỗng -> trả mảng rỗng, không truncated', async () => {
+    const res = await collectAllRawCards(() => Promise.resolve([]));
+    expect(res.cards).toEqual([]);
+    expect(res.truncated).toBe(false);
+  });
 });
