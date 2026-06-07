@@ -6,6 +6,13 @@ export interface TrelloMember {
   fullName: string;
 }
 
+// Client REST của Power-Up (t.getRestApi()). Mỗi member tự cấp token đọc của mình.
+export interface TrelloRestApi {
+  getToken(): Promise<string | null>;
+  authorize(opts: { scope: string; expiration: string }): Promise<string>;
+  clearToken(): Promise<void>;
+}
+
 export interface TrelloT {
   get(scope: 'card', visibility: 'shared'): Promise<Record<string, unknown>>;
   set(scope: 'card', visibility: 'shared', key: string, value: unknown): Promise<void>;
@@ -16,4 +23,12 @@ export interface TrelloT {
   render?(): Promise<void>;
   sizeTo?(selector: string): Promise<void>;
   popup?(opts: { title: string; url: string; height?: number }): void;
+  modal?(opts: {
+    title: string;
+    url: string;
+    fullscreen?: boolean;
+    height?: number;
+  }): void;
+  getRestApi?(): TrelloRestApi;
+  getContext?(): { board: string; card?: string; member?: string };
 }
