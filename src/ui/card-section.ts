@@ -15,7 +15,7 @@ import type { Entry } from '../core/types';
 const t = (window.TrelloPowerUp as unknown as { iframe: () => TrelloT }).iframe();
 
 const QUICK_POINTS = [0.5, 1, 2, 3, 5, 8];
-const UNDO_MS = 3000;
+const UNDO_MS = 5000;
 
 function $(id: string): HTMLElement {
   const el = document.getElementById(id);
@@ -244,7 +244,6 @@ function onEstClick(e: Event): void {
   input.classList.remove('hidden');
   input.focus();
   input.select();
-  t.sizeTo?.('#app').catch(() => {});
 }
 
 async function commitEstimate(): Promise<void> {
