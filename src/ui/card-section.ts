@@ -312,7 +312,7 @@ async function init(): Promise<void> {
     openModal();
   });
 
-  $('est-display').onclick = onEstClick;
+  $('est-area').onclick = onEstClick;
 
   const estInput = $('est-input') as HTMLInputElement;
   estInput.onblur = () => void commitEstimate();

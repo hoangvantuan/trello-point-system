@@ -18,6 +18,13 @@
 
 * { box-sizing: border-box; }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
 body {
   margin: 0;
   font-family: var(--sans);
@@ -107,7 +114,12 @@ body {
   align-items: flex-end;
   gap: 2px;
   flex: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  transition: background 0.15s;
 }
+.est-area:hover { background: var(--green-soft); }
 .est-label {
   font-size: 9px;
   text-transform: uppercase;
