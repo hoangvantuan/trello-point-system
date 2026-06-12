@@ -244,6 +244,7 @@ function onEstClick(e: Event): void {
   input.classList.remove('hidden');
   input.focus();
   input.select();
+  t.sizeTo?.('#app').catch(() => {});
 }
 
 async function commitEstimate(): Promise<void> {
