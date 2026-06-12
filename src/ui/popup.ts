@@ -239,7 +239,6 @@ async function onSaveLog(): Promise<void> {
 
   resetForm();
   await refresh();
-  await t.render?.();
 }
 
 async function onSaveEstimate(): Promise<void> {
@@ -248,7 +247,6 @@ async function onSaveEstimate(): Promise<void> {
   const ok = await guarded(() => saveEstimate(t, card, res.value));
   if (!ok) return;
   await refresh();
-  await t.render?.();
 }
 
 // Quick chips: điền nhanh point, chừa ngày + ghi chú cho người dùng.
