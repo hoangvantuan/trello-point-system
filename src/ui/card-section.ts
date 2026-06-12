@@ -186,7 +186,7 @@ async function quickLog(point: number): Promise<void> {
   renderSummary();
   renderEstimate();
   renderTodayLine();
-  await t.render?.();
+
 }
 
 /* ================================================================
@@ -226,7 +226,7 @@ async function onUndo(): Promise<void> {
 
   hideUndoToast();
   await refresh();
-  await t.render?.();
+
 }
 
 /* ================================================================
@@ -260,7 +260,7 @@ async function commitEstimate(): Promise<void> {
   input.classList.add('hidden');
   $('est-display').classList.remove('hidden');
   await refresh();
-  await t.render?.();
+
 }
 
 function cancelEstimate(): void {

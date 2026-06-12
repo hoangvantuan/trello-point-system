@@ -174,7 +174,7 @@ function beginDelete(wrap: HTMLElement, entryIndex: number): void {
   yes.onclick = async () => {
     await guarded(() => deleteEntry(t, card, me, entryIndex));
     await refresh();
-    await t.render?.();
+
   };
   const no = document.createElement('button');
   no.className = 'icon-btn';
@@ -332,6 +332,7 @@ async function init(): Promise<void> {
   // Gõ tay point -> bỏ trạng thái chip đang chọn.
   ($('log-point') as HTMLInputElement).addEventListener('input', clearActiveChip);
 
+  t.render?.(() => void refresh());
   await refresh();
 }
 
