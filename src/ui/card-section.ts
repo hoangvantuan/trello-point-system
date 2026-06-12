@@ -37,6 +37,7 @@ async function refresh(): Promise<void> {
   renderSummary();
   renderEstimate();
   renderTodayLine();
+  t.sizeTo?.('#app').catch(() => {});
 }
 
 function renderSummary(): void {
