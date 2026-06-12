@@ -22,6 +22,7 @@ export interface TrelloT {
   ): Promise<TrelloMember>;
   render?(): Promise<void>;
   sizeTo?(selector: string): Promise<void>;
+  signUrl?(url: string, opts?: { arg?: string }): string;
   popup?(opts: { title: string; url: string; height?: number }): void;
   modal?(opts: {
     title: string;

@@ -26,12 +26,12 @@ TrelloPowerUp.initialize(
       ];
     },
 
-    'card-back-section': () => ({
+    'card-back-section': (t) => ({
       title: '🎯 Point',
       icon: SECTION_ICON,
       content: {
         type: 'iframe' as const,
-        url: './card-section.html',
+        url: t.signUrl?.('./card-section.html') ?? './card-section.html',
         height: 130,
       },
     }),

@@ -309,10 +309,12 @@ async function init(): Promise<void> {
 
   buildChips();
 
-  $('summary').onclick = openModal;
+  $('summary').addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('#est-area')) return;
+    openModal();
+  });
 
   $('est-display').onclick = onEstClick;
-  $('est-area').onclick = (e) => e.stopPropagation();
 
   const estInput = $('est-input') as HTMLInputElement;
   estInput.onblur = () => void commitEstimate();
