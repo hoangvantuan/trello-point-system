@@ -9,13 +9,7 @@ const DASHBOARD_BUTTON_ICON = {
   dark: new URL('/icons/dashboard-light.svg', globalThis.location.origin).toString(),
   light: new URL('/icons/dashboard-dark.svg', globalThis.location.origin).toString(),
 };
-
-async function computeBadgeText(t: TrelloT): Promise<string | null> {
-  const card = await loadCard(t);
-  const logged = sumEntries(Object.values(card.logs).flatMap((l) => l.entries));
-  const badge = formatBadge(logged, card.estimate);
-  return badge ? badge.text : null;
-}
+const SECTION_ICON = new URL('/icons/target-dark.svg', globalThis.location.origin).toString();
 
 TrelloPowerUp.initialize(
   {
@@ -32,29 +26,21 @@ TrelloPowerUp.initialize(
       ];
     },
 
-    'card-detail-badges': async (t) => {
-      const text = await computeBadgeText(t);
-      return [
-        {
-          title: 'Point',
-          text: text ? `Log point · ${text}` : 'Log point',
-          callback: (t2: TrelloT) => {
-            t2.modal?.({
-              title: 'Point System',
-              url: './popup.html',
-              fullscreen: false,
-              height: 560,
-            });
-          },
-        },
-      ];
-    },
+    'card-back-section': () => ({
+      title: '🎯 Point',
+      icon: SECTION_ICON,
+      content: {
+        type: 'iframe' as const,
+        url: './card-section.html',
+        height: 130,
+      },
+    }),
 
     'board-buttons': async () => [
       {
         text: 'Point Stats',
         icon: DASHBOARD_BUTTON_ICON,
-        condition: 'edit', // chỉ member có quyền edit board mới thấy
+        condition: 'edit',
         callback: (t: TrelloT) => {
           t.modal?.({
             title: 'Point Stats Dashboard',

@@ -8,7 +8,14 @@ interface TestBoardButton {
   callback?: (t: TrelloT) => void;
 }
 
+interface TestCardBackSection {
+  title: string;
+  icon: string;
+  content: { type: string; url: string; height: number };
+}
+
 interface TestCapabilities {
+  'card-back-section'?: (t: TrelloT) => TestCardBackSection;
   'board-buttons'?: (t: TrelloT) => Promise<TestBoardButton[]>;
 }
 
@@ -28,6 +35,22 @@ describe('connector board button', () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+  });
+
+  test('registers card-back-section with correct shape', async () => {
+    await import('../src/connector');
+
+    const section = capabilities?.['card-back-section']?.({} as TrelloT);
+
+    expect(section).toMatchObject({
+      title: '🎯 Point',
+      icon: 'https://powerup.example/icons/target-dark.svg',
+      content: {
+        type: 'iframe',
+        url: './card-section.html',
+        height: 130,
+      },
+    });
   });
 
   test('registers dashboard board button with Trello icons', async () => {

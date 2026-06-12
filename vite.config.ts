@@ -8,6 +8,7 @@ export default defineConfig({
         connector: resolve(__dirname, 'index.html'),
         popup: resolve(__dirname, 'popup.html'),
         dashboard: resolve(__dirname, 'dashboard.html'),
+        cardSection: resolve(__dirname, 'card-section.html'),
       },
     },
   },

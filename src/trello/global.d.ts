@@ -18,6 +18,16 @@ interface BoardButtonResult {
   callback?: (t: TrelloT) => void;
 }
 
+interface CardBackSectionResult {
+  title: string;
+  icon: string;
+  content: {
+    type: 'iframe';
+    url: string;
+    height: number;
+  };
+}
+
 interface PowerUpOptions {
   appKey: string;
   appName: string;
@@ -29,6 +39,7 @@ interface PowerUp {
     capabilities: {
       'card-badges'?: (t: TrelloT) => Promise<BadgeResult[]>;
       'card-detail-badges'?: (t: TrelloT) => Promise<DetailBadgeResult[]>;
+      'card-back-section'?: (t: TrelloT) => CardBackSectionResult;
       'board-buttons'?: (t: TrelloT) => Promise<BoardButtonResult[]>;
     },
     options?: PowerUpOptions

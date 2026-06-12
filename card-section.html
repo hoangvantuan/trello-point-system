@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <title>Point Section</title>
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/ui/card-section.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Summary: click to open full modal -->
+      <div id="summary" class="summary" title="Bấm để xem chi tiết">
+        <div class="summary-left">
+          <div class="figures">
+            <span id="sum-logged" class="fig-logged">0</span>
+            <span id="sum-estimate" class="fig-target">/ —</span>
+          </div>
+          <div id="progress-bar" class="progress empty"><span></span></div>
+          <div id="sum-meta" class="sum-meta muted">Chưa đặt mục tiêu</div>
+        </div>
+        <div class="est-area" id="est-area">
+          <span class="est-label">mục tiêu</span>
+          <span id="est-display" class="est-value">—</span>
+          <input id="est-input" class="est-input hidden" type="number" min="0" max="100" step="0.1" />
+        </div>
+      </div>
+
+      <!-- Quick chips -->
+      <div id="chips-row" class="chips-row">
+        <div id="quick-chips" class="chips"></div>
+      </div>
+
+      <!-- Undo toast (replaces chips) -->
+      <div id="undo-toast" class="undo-toast hidden">
+        <span id="undo-msg" class="undo-msg"></span>
+        <button id="undo-btn" class="undo-btn">Hoàn tác</button>
+      </div>
+
+      <!-- Error line -->
+      <div id="error-line" class="error-line hidden"></div>
+
+      <!-- Today summary -->
+      <div id="today-line" class="today-line muted">Hôm nay: chưa có log</div>
+    </div>
+    <script type="module" src="/src/ui/card-section.ts"></script>
+  </body>
+</html>
