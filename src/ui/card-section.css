@@ -1,14 +1,16 @@
 :root {
+  --bg:       #f6f2e9;
   --card:     #fffdf8;
-  --ink:      #23221c;
-  --ink-2:    #6f6b5e;
-  --ink-3:    #a9a392;
-  --rule:     #e7e1d2;
-  --rule-2:   #d9d2c0;
-  --green:    #2c6e49;
-  --green-2:  #38875b;
-  --green-soft: rgba(44, 110, 73, 0.10);
-  --amber:    #b07a16;
+  --ink:      #1a1914;
+  --ink-2:    #504d43;
+  --ink-3:    #736e62;
+  --rule:     #d4cdb9;
+  --rule-2:   #c0b9a5;
+  --green:    #1d6040;
+  --green-2:  #2a7a52;
+  --green-soft: rgba(29, 96, 64, 0.12);
+  --amber:    #9a6a0e;
+  --red:      #b33a22;
   --radius:   6px;
   --mono:     "JetBrains Mono", ui-monospace, "SF Mono", monospace;
   --sans:     "Hanken Grotesk", system-ui, sans-serif;
@@ -22,13 +24,13 @@ body {
   font-size: 13px;
   line-height: 1.4;
   color: var(--ink);
-  background: #f6f2e9;
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
 }
 
 #app {
   padding: 6px 4px;
-  background: #f6f2e9;
+  background: var(--bg);
   border-radius: 8px;
 }
 
@@ -43,7 +45,7 @@ body {
   cursor: pointer;
   transition: background 0.15s;
 }
-.summary:hover { background: rgba(0, 0, 0, 0.04); }
+.summary:hover { background: rgba(0, 0, 0, 0.05); }
 
 .summary-left { flex: 1; min-width: 0; }
 
@@ -63,16 +65,16 @@ body {
 }
 .fig-target {
   font-size: 13px;
-  font-weight: 500;
-  color: var(--ink-3);
+  font-weight: 600;
+  color: var(--ink-2);
   font-variant-numeric: tabular-nums;
 }
 
 /* progress bar */
 .progress {
-  height: 5px;
+  height: 6px;
   margin: 6px 0 3px;
-  background: #eee7d6;
+  background: var(--rule);
   border-radius: 99px;
   overflow: hidden;
 }
@@ -84,14 +86,14 @@ body {
   background: linear-gradient(90deg, var(--green-2), var(--green));
   transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.progress.done > span { background: linear-gradient(90deg, var(--green), #1f5436); }
-.progress.over > span { background: repeating-linear-gradient(45deg, var(--amber) 0 6px, #c98e26 6px 12px); }
+.progress.done > span { background: linear-gradient(90deg, var(--green), #1a5035); }
+.progress.over > span { background: repeating-linear-gradient(45deg, var(--amber) 0 6px, #b8780e 6px 12px); }
 .progress.empty > span { background: var(--rule-2); }
 
 .sum-meta {
   font-family: var(--mono);
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--green);
   font-variant-numeric: tabular-nums;
 }
@@ -111,7 +113,7 @@ body {
   text-transform: uppercase;
   letter-spacing: 1.2px;
   color: var(--ink-3);
-  font-weight: 600;
+  font-weight: 700;
 }
 .est-value {
   font-family: var(--mono);
@@ -122,11 +124,12 @@ body {
   padding: 2px 6px;
   border-radius: 4px;
   border-bottom: 2px dashed var(--rule-2);
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 .est-value:hover {
   border-bottom-color: var(--green);
   color: var(--green);
+  background: var(--green-soft);
 }
 .est-input {
   width: 72px;
@@ -136,11 +139,11 @@ body {
   font-weight: 700;
   color: var(--ink);
   background: var(--card);
-  border: 1px solid var(--green);
+  border: 2px solid var(--green);
   border-radius: 6px;
   padding: 4px 6px;
   outline: none;
-  box-shadow: 0 0 0 2px var(--green-soft);
+  box-shadow: 0 0 0 3px var(--green-soft);
 }
 
 /* ── Quick chips ── */
@@ -155,30 +158,33 @@ body {
   font-size: 12px;
   font-weight: 700;
   color: var(--ink);
-  background: #f0ece3;
-  border: 1px solid #c5bfb0;
+  background: var(--card);
+  border: 1.5px solid var(--rule-2);
   border-radius: 6px;
-  padding: 4px 0;
-  min-width: 34px;
+  padding: 5px 0;
+  min-width: 36px;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.1s, border-color 0.15s, background 0.15s, color 0.15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: transform 0.1s, border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
 }
 .chip:hover {
   border-color: var(--green);
   color: var(--green);
   transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 .chip:active {
   transform: translateY(0);
   background: var(--green);
   border-color: var(--green);
   color: #fff;
+  box-shadow: none;
 }
 .chip-plus {
-  color: var(--ink-3);
+  color: var(--ink-2);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
 }
 .chip-input {
   width: 50px;
@@ -187,11 +193,11 @@ body {
   font-weight: 700;
   color: var(--ink);
   background: var(--card);
-  border: 1px solid var(--green);
+  border: 2px solid var(--green);
   border-radius: 6px;
   padding: 4px 6px;
   outline: none;
-  box-shadow: 0 0 0 2px var(--green-soft);
+  box-shadow: 0 0 0 3px var(--green-soft);
 }
 
 /* ── Undo toast ── */
@@ -203,25 +209,26 @@ body {
   animation: fadeSlide 0.2s ease;
 }
 .undo-msg {
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--green);
 }
 .undo-btn {
   font-family: var(--sans);
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--ink-2);
-  background: none;
-  border: 1px solid var(--rule-2);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--card);
+  border: 1.5px solid var(--rule-2);
   border-radius: 5px;
-  padding: 3px 10px;
+  padding: 4px 12px;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: border-color 0.15s, background 0.15s;
 }
 .undo-btn:hover {
-  border-color: var(--ink);
-  color: var(--ink);
+  border-color: var(--ink-2);
+  background: #ece8de;
 }
 
 @keyframes fadeSlide {
@@ -232,6 +239,7 @@ body {
 /* ── Today line ── */
 .today-line {
   font-size: 11.5px;
+  font-weight: 500;
   color: var(--ink-2);
   padding: 2px 8px 4px;
 }
@@ -243,8 +251,8 @@ body {
 /* ── Error line ── */
 .error-line {
   font-size: 11.5px;
-  font-weight: 500;
-  color: #b33a22;
+  font-weight: 600;
+  color: var(--red);
   padding: 3px 8px;
   animation: fadeSlide 0.2s ease;
 }

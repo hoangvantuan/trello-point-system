@@ -20,7 +20,7 @@ export interface TrelloT {
   member(
     ...fields: Array<'id' | 'username' | 'fullName'>
   ): Promise<TrelloMember>;
-  render?(): Promise<void>;
+  render?(fn?: () => void | Promise<void>): Promise<void>;
   sizeTo?(selector: string): Promise<void>;
   signUrl?(url: string, opts?: { arg?: string }): string;
   popup?(opts: { title: string; url: string; height?: number }): void;

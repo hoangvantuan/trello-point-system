@@ -328,6 +328,8 @@ async function init(): Promise<void> {
 
   $('undo-btn').onclick = () => void onUndo();
 
+  t.render?.(() => void refresh());
+
   await refresh();
 }
 
