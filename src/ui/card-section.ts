@@ -37,7 +37,7 @@ async function refresh(): Promise<void> {
   renderSummary();
   renderEstimate();
   renderTodayLine();
-  await t.sizeTo?.('#app');
+  try { await t.sizeTo?.('#app'); } catch { /* iframe chưa sẵn sàng */ }
 }
 
 function renderSummary(): void {
@@ -187,7 +187,7 @@ async function quickLog(point: number): Promise<void> {
   renderSummary();
   renderEstimate();
   renderTodayLine();
-  await t.sizeTo?.('#app');
+  try { await t.sizeTo?.('#app'); } catch { /* ignore */ }
   await t.render?.();
 }
 

@@ -314,6 +314,12 @@ async function init(): Promise<void> {
   ($('log-cancel') as HTMLButtonElement).onclick = resetForm;
   ($('estimate') as HTMLInputElement).onchange = onSaveEstimate;
 
+  for (const id of ['log-point', 'estimate']) {
+    ($(id) as HTMLInputElement).addEventListener('focus', (e) => {
+      (e.target as HTMLInputElement).select();
+    });
+  }
+
   // Enter trong ô point hoặc ghi chú -> lưu nhanh.
   for (const id of ['log-point', 'log-comment']) {
     ($(id) as HTMLInputElement).addEventListener('keydown', (e) => {
