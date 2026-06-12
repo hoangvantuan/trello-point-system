@@ -9,6 +9,7 @@ export default defineConfig({
         popup: resolve(__dirname, 'popup.html'),
         dashboard: resolve(__dirname, 'dashboard.html'),
         cardSection: resolve(__dirname, 'card-section.html'),
+        privacy: resolve(__dirname, 'privacy.html'),
       },
     },
   },
