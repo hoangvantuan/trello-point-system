@@ -12,7 +12,7 @@ Tham khảo cấu trúc mẫu Trello khen: https://trello.com/power-ups/58c85f41
 ## Author / Support
 
 - **Author:** Hoang Van Tuan
-- **Support / Privacy:** https://trello-point-system.ho-ng-v-n-tu-n.workers.dev/privacy.html
+- **Support / Privacy:** https://trello-point-system.hoangvantuan.com/privacy.html
 
 ---
 
@@ -30,7 +30,7 @@ Tham khảo cấu trúc mẫu Trello khen: https://trello.com/power-ups/58c85f41
 
 ### Privacy first
 
-Point System stores everything in Trello's own `pluginData` — **no external servers, no tracking, no cookies**. Remove the Power-Up from a board and all its data goes with it. See our [Privacy Policy](https://trello-point-system.ho-ng-v-n-tu-n.workers.dev/privacy.html).
+Point System stores everything in Trello's own `pluginData` — **no external servers, no tracking, no cookies**. Remove the Power-Up from a board and all its data goes with it. See our [Privacy Policy](https://trello-point-system.hoangvantuan.com/privacy.html).
 
 ### Getting started
 
@@ -41,15 +41,21 @@ Point System stores everything in Trello's own `pluginData` — **no external se
 
 ---
 
-## Images / GIFs cần chuẩn bị (checklist)
+## Images (đã có, serve từ domain)
 
-Trello khuyến nghị có ít nhất 1–2 ảnh, GIF càng tốt. Đề xuất chụp ở các màn hình sau (UI đã chuyển sang tiếng Anh):
+3 ảnh đã đặt trong `public/listing/` và sẽ được serve sau khi deploy:
 
-- [ ] **Card back section** — phần "🎯 Point" với các chip điểm + progress bar (ảnh hero).
-- [ ] **GIF: log nhanh** — bấm chip → toast "✓ Logged X pts" → progress bar chạy.
-- [ ] **Popup ledger** — modal "Point System": form Log point + History + team total.
-- [ ] **Dashboard By List** — bảng totals theo list + Breakdown by period.
-- [ ] **Dashboard By User** — bảng theo user với swatch màu + breakdown stacked.
-- [ ] **GIF: đổi time filter** — bấm Today / This week… để thấy số liệu đổi.
+| Ảnh | Màn hình | URL công khai |
+|---|---|---|
+| `card-section.png` | Card-back section (🎯 Point) — chip + progress bar | https://trello-point-system.hoangvantuan.com/listing/card-section.png |
+| `popup-ledger.png` | Popup ledger — Log point + History + team total | https://trello-point-system.hoangvantuan.com/listing/popup-ledger.png |
+| `dashboard.png` | Dashboard — By List + Breakdown by period | https://trello-point-system.hoangvantuan.com/listing/dashboard.png |
 
-Kích thước Trello gợi ý: ảnh ngang, rõ nét; GIF dung lượng vừa phải để load nhanh.
+Khi điền listing trên admin portal: upload trực tiếp 3 file này (hoặc dán URL nếu form cho phép).
+
+### Nâng cấp tùy chọn (nếu có thời gian)
+
+- [ ] GIF **log nhanh**: bấm chip → toast "✓ Logged X pts" → progress bar chạy.
+- [ ] Ảnh **Dashboard By User**: bảng theo user với swatch màu + breakdown stacked.
+
+Lưu ý: ảnh ngang, rõ nét; GIF dung lượng vừa phải để load nhanh.
