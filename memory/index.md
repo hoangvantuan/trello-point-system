@@ -23,3 +23,5 @@
 | F-009 | t.sizeTo() chỉ dùng cho t.popup(); trong t.modal() nó ném PostMessageIO:NotHandled | raw | trello, power-up, modal, popup, sizeTo, debug | [↗](entries/F-009.md) |
 | F-010 | Trello REST API helper cần appKey/appName ở cả initialize và iframe | raw | trello, power-up, rest-api, dashboard, iframe, appKey | [↗](entries/F-010.md) |
 | F-011 | Dashboard responsive cần giữ bảng cuộn trong sheet và cho breakdown bar co lại | raw | trello, power-up, dashboard, ui, responsive, css, debug | [↗](entries/F-011.md) |
+| F-012 | Security headers cho static-asset Worker đặt qua public/_headers -> dist/_headers | raw | cloudflare, security, headers, csp, hsts, deploy | [↗](entries/F-012.md) |
+| F-013 | Power-Up iframe phải dùng CSP frame-ancestors, KHÔNG dùng X-Frame-Options | raw | trello, power-up, security, csp, iframe, headers | [↗](entries/F-013.md) |

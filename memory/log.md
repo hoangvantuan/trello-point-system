@@ -19,3 +19,7 @@
 ## [2026-06-07] capture | F-010 (new fact entry)
 ## [2026-06-07] update | F-010 Trello REST API helper cần appKey/appName ở cả initialize và iframe
 ## [2026-06-07] capture | F-011 (new fact entry)
+## [2026-06-16] capture | F-012 (new fact entry)
+## [2026-06-16] capture | F-013 (new fact entry)
+## [2026-06-16] capture | F-012 Security headers static-asset Worker qua public/_headers
+## [2026-06-16] capture | F-013 Power-Up iframe dùng CSP frame-ancestors thay X-Frame-Options

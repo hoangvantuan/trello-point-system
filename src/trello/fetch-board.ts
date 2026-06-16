@@ -10,7 +10,7 @@ const API = 'https://api.trello.com/1';
 // Lỗi khi token bị thu hồi (HTTP 401). UI bắt để mời authorize lại.
 export class UnauthorizedError extends Error {
   constructor() {
-    super('Token bị thu hồi, cấp quyền lại');
+    super('Token revoked, please re-authorize');
     this.name = 'UnauthorizedError';
   }
 }
@@ -59,7 +59,7 @@ export async function fetchBoardStats(
       `&fields=${FIELDS}&limit=${PAGE_LIMIT}${beforeParam}&${auth}`;
     const res = await fetch(url);
     if (res.status === 401) throw new UnauthorizedError();
-    if (!res.ok) throw new Error(`Lỗi tải card (HTTP ${res.status})`);
+    if (!res.ok) throw new Error(`Failed to load cards (HTTP ${res.status})`);
     return (await res.json()) as RawCard[];
   };
 
@@ -67,7 +67,7 @@ export async function fetchBoardStats(
 
   const listRes = await fetch(`${API}/boards/${encodeURIComponent(boardId)}/lists?filter=open&fields=id,name&${auth}`);
   if (listRes.status === 401) throw new UnauthorizedError();
-  if (!listRes.ok) throw new Error(`Lỗi tải list (HTTP ${listRes.status})`);
+  if (!listRes.ok) throw new Error(`Failed to load lists (HTTP ${listRes.status})`);
   const lists = (await listRes.json()) as { id: string; name: string }[];
 
   const cards = rawCards

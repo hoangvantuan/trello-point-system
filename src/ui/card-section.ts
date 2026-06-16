@@ -55,7 +55,7 @@ function renderSummary(): void {
     target.textContent = '/ —';
     fill.style.width = '0%';
     bar.className = 'progress empty';
-    meta.textContent = 'Chưa đặt mục tiêu';
+    meta.textContent = 'No target set';
     meta.className = 'sum-meta muted';
     return;
   }
@@ -67,12 +67,12 @@ function renderSummary(): void {
   if (logged > estimate) {
     const over = roundTotal(logged - estimate);
     bar.className = 'progress over';
-    meta.textContent = `${pct}% · vượt ${over}`;
+    meta.textContent = `${pct}% · ${over} over`;
     meta.className = 'sum-meta over';
   } else {
     const left = roundTotal(estimate - logged);
     bar.className = `progress ${pct >= 100 ? 'done' : ''}`.trim();
-    meta.textContent = `${pct}% · còn ${left}`;
+    meta.textContent = `${pct}% · ${left} left`;
     meta.className = 'sum-meta';
   }
 }
@@ -96,10 +96,10 @@ function renderTodayLine(): void {
 
   const el = $('today-line');
   if (parts.length === 0) {
-    el.textContent = 'Hôm nay: chưa có log';
+    el.textContent = 'Today: no log yet';
     el.className = 'today-line muted';
   } else {
-    el.textContent = `Hôm nay: ${parts.join(' · ')}`;
+    el.textContent = `Today: ${parts.join(' · ')}`;
     el.className = 'today-line';
   }
 }
@@ -175,7 +175,7 @@ async function quickLog(point: number): Promise<void> {
   try {
     await saveEntry(t, card, me, entry);
   } catch (e) {
-    showError(e instanceof CapacityExceededError ? e.message : 'Lỗi lưu dữ liệu');
+    showError(e instanceof CapacityExceededError ? e.message : 'Failed to save data');
     return;
   }
 
@@ -200,7 +200,7 @@ function showUndoToast(point: number): void {
   $('chips-row').classList.add('hidden');
   const toast = $('undo-toast');
   toast.classList.remove('hidden');
-  $('undo-msg').textContent = `✓ Đã ghi ${point} điểm`;
+  $('undo-msg').textContent = `✓ Logged ${point} pts`;
 
   undoTimer = setTimeout(hideUndoToast, UNDO_MS);
 }
@@ -254,7 +254,7 @@ async function commitEstimate(): Promise<void> {
     try {
       await saveEstimate(t, card, res.value);
     } catch (e) {
-      showError(e instanceof CapacityExceededError ? e.message : 'Lỗi lưu estimate');
+      showError(e instanceof CapacityExceededError ? e.message : 'Failed to save estimate');
     }
   }
 

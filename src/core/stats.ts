@@ -66,7 +66,7 @@ export function aggregateByList(
     const logged = roundTotal(
       card.entries.filter((e) => inRange(e.date, range)).reduce((s, e) => s + e.point, 0)
     );
-    const name = nameById.get(card.idList) ?? '(list ẩn)';
+    const name = nameById.get(card.idList) ?? '(hidden list)';
     const row = acc.get(card.idList) ?? { name, cards: 0, estimate: 0, logged: 0 };
     row.cards += 1;
     row.estimate = roundTotal(row.estimate + (card.estimate ?? 0));

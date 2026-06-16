@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Point Section</title>
@@ -15,17 +15,17 @@
   <body>
     <div id="app">
       <!-- Summary: click to open full modal -->
-      <div id="summary" class="summary" title="Bấm để xem chi tiết">
+      <div id="summary" class="summary" title="Click to view details">
         <div class="summary-left">
           <div class="figures">
             <span id="sum-logged" class="fig-logged">0</span>
             <span id="sum-estimate" class="fig-target">/ —</span>
           </div>
           <div id="progress-bar" class="progress empty"><span></span></div>
-          <div id="sum-meta" class="sum-meta muted">Chưa đặt mục tiêu</div>
+          <div id="sum-meta" class="sum-meta muted">No target set</div>
         </div>
         <div class="est-area" id="est-area">
-          <span class="est-label">mục tiêu</span>
+          <span class="est-label">target</span>
           <span id="est-display" class="est-value">—</span>
           <input id="est-input" class="est-input hidden" type="number" min="0" max="100" step="0.1" />
         </div>
@@ -39,14 +39,14 @@
       <!-- Undo toast (replaces chips) -->
       <div id="undo-toast" class="undo-toast hidden">
         <span id="undo-msg" class="undo-msg"></span>
-        <button id="undo-btn" class="undo-btn">Hoàn tác</button>
+        <button id="undo-btn" class="undo-btn">Undo</button>
       </div>
 
       <!-- Error line -->
       <div id="error-line" class="error-line hidden"></div>
 
       <!-- Today summary -->
-      <div id="today-line" class="today-line muted">Hôm nay: chưa có log</div>
+      <div id="today-line" class="today-line muted">Today: no log yet</div>
     </div>
     <script type="module" src="/src/ui/card-section.ts"></script>
   </body>

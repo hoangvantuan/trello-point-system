@@ -31,7 +31,7 @@ export async function loadCard(t: TrelloT): Promise<CardData> {
 // Lỗi ném ra khi ghi vượt trần 4096 — UI bắt để hiện banner đỏ.
 export class CapacityExceededError extends Error {
   constructor() {
-    super('Card đã đầy, xóa bớt log cũ để tiếp tục');
+    super('Card is full, delete old logs to continue');
     this.name = 'CapacityExceededError';
   }
 }

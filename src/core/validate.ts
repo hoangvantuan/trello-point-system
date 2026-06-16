@@ -7,15 +7,15 @@ const MAX_POINT = 100;
 // Kiểm tra point: rỗng / NaN / <=0 / >100 / quá 1 chữ số thập phân đều bị chặn.
 export function validatePoint(input: string): ValidationResult {
   const s = input.trim();
-  if (s === '') return { ok: false, error: 'Nhập số point' };
+  if (s === '') return { ok: false, error: 'Enter a point value' };
 
   const value = Number(s);
-  if (!Number.isFinite(value)) return { ok: false, error: 'Point phải là số' };
-  if (value <= 0) return { ok: false, error: 'Point phải lớn hơn 0' };
-  if (value > MAX_POINT) return { ok: false, error: `Point tối đa ${MAX_POINT}` };
+  if (!Number.isFinite(value)) return { ok: false, error: 'Point must be a number' };
+  if (value <= 0) return { ok: false, error: 'Point must be greater than 0' };
+  if (value > MAX_POINT) return { ok: false, error: `Point max is ${MAX_POINT}` };
 
   if (Math.round(value * 10) !== value * 10) {
-    return { ok: false, error: 'Point tối đa 1 chữ số thập phân' };
+    return { ok: false, error: 'Point allows at most 1 decimal place' };
   }
 
   return { ok: true, value };
@@ -28,10 +28,10 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 // Kiểm tra ngày: đúng định dạng YYYY-MM-DD và không vượt quá hôm nay.
 export function validateDate(input: string, today: string): DateValidationResult {
   if (!DATE_RE.test(input)) {
-    return { ok: false, error: 'Ngày phải dạng YYYY-MM-DD' };
+    return { ok: false, error: 'Date must be YYYY-MM-DD' };
   }
   if (input > today) {
-    return { ok: false, error: 'Không log cho ngày tương lai' };
+    return { ok: false, error: 'Cannot log a future date' };
   }
   return { ok: true };
 }
@@ -46,9 +46,9 @@ export function validateEstimate(input: string): EstimateValidationResult {
   if (s === '') return { ok: true, value: null };
 
   const value = Number(s);
-  if (!Number.isFinite(value)) return { ok: false, error: 'Estimate phải là số' };
-  if (value <= 0) return { ok: false, error: 'Estimate phải lớn hơn 0' };
-  if (value > 100) return { ok: false, error: 'Estimate tối đa 100' };
+  if (!Number.isFinite(value)) return { ok: false, error: 'Estimate must be a number' };
+  if (value <= 0) return { ok: false, error: 'Estimate must be greater than 0' };
+  if (value > 100) return { ok: false, error: 'Estimate max is 100' };
 
   return { ok: true, value };
 }

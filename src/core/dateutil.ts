@@ -53,5 +53,5 @@ export function weekBucket(date: string): { key: string; label: string } {
 // Định danh + nhãn kỳ tháng cho breakdown.
 export function monthBucket(date: string): { key: string; label: string } {
   const parts = date.split('-');
-  return { key: `${parts[0]}-${parts[1]}`, label: `T${Number(parts[1])}` };
+  return { key: `${parts[0]}-${parts[1]}`, label: `M${Number(parts[1])}` };
 }

@@ -161,7 +161,7 @@ describe('breakdown', () => {
 
   it('month -> gộp theo tháng', () => {
     const b = breakdown(entries, 'month', 8);
-    expect(b.map((x) => x.label)).toEqual(['T5', 'T6']);
+    expect(b.map((x) => x.label)).toEqual(['M5', 'M6']);
     expect(b.map((x) => x.total)).toEqual([4, 5]);
   });
 

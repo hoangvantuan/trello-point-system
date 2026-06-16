@@ -23,7 +23,7 @@ const QUICK_POINTS = [0.5, 1, 2, 3, 5, 8];
 
 function $(id: string): HTMLElement {
   const el = document.getElementById(id);
-  if (!el) throw new Error(`Thiếu phần tử #${id}`);
+  if (!el) throw new Error(`Missing element #${id}`);
   return el;
 }
 
@@ -64,7 +64,7 @@ function renderSummary(): void {
     target.textContent = '/ —';
     fill.style.width = '0%';
     bar.className = 'progress empty';
-    meta.textContent = 'Chưa đặt mục tiêu';
+    meta.textContent = 'No target set';
     meta.className = 'sum-meta muted';
     return;
   }
@@ -76,12 +76,12 @@ function renderSummary(): void {
   if (logged > estimate) {
     const over = roundTotal(logged - estimate);
     bar.className = 'progress over';
-    meta.textContent = `${pct}% · vượt ${over}`;
+    meta.textContent = `${pct}% · ${over} over`;
     meta.className = 'sum-meta over';
   } else {
     const left = roundTotal(estimate - logged);
     bar.className = `progress ${pct >= 100 ? 'done' : ''}`.trim();
-    meta.textContent = `${pct}% · còn ${left}`;
+    meta.textContent = `${pct}% · ${left} left`;
     meta.className = 'sum-meta';
   }
 }
@@ -92,7 +92,7 @@ function renderCapacity(): void {
   const bar = $('capacity-bar');
   bar.className = `capbar ${info.level === 'ok' ? '' : info.level}`.trim();
   (bar.firstElementChild as HTMLElement).style.width = `${info.percent}%`;
-  $('capacity-text').textContent = `Bộ nhớ thẻ ${info.percent}%`;
+  $('capacity-text').textContent = `Card storage ${info.percent}%`;
 }
 
 function renderHistory(): void {
@@ -107,7 +107,7 @@ function renderHistory(): void {
   if (groups.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty';
-    empty.textContent = 'Chưa có log nào. Ghi mốc đầu tiên ở trên.';
+    empty.textContent = 'No logs yet. Add your first entry above.';
     host.appendChild(empty);
     return;
   }
@@ -148,15 +148,15 @@ function makeRowActions(entryIndex: number): HTMLElement {
 
   const edit = document.createElement('button');
   edit.className = 'icon-btn';
-  edit.title = 'Sửa';
-  edit.setAttribute('aria-label', 'Sửa');
+  edit.title = 'Edit';
+  edit.setAttribute('aria-label', 'Edit');
   edit.textContent = '✎';
   edit.onclick = () => beginEdit(entryIndex);
 
   const del = document.createElement('button');
   del.className = 'icon-btn';
-  del.title = 'Xóa';
-  del.setAttribute('aria-label', 'Xóa');
+  del.title = 'Delete';
+  del.setAttribute('aria-label', 'Delete');
   del.textContent = '🗑';
   del.onclick = () => beginDelete(wrap, entryIndex);
 
@@ -166,11 +166,11 @@ function makeRowActions(entryIndex: number): HTMLElement {
 
 // Xác nhận xóa một bước tại chỗ: 🗑 -> "Xóa? ✓/✗".
 function beginDelete(wrap: HTMLElement, entryIndex: number): void {
-  wrap.innerHTML = '<span class="confirm-q">Xóa?</span>';
+  wrap.innerHTML = '<span class="confirm-q">Delete?</span>';
   const yes = document.createElement('button');
   yes.className = 'icon-btn danger';
   yes.textContent = '✓';
-  yes.title = 'Xác nhận xóa';
+  yes.title = 'Confirm delete';
   yes.onclick = async () => {
     await guarded(() => deleteEntry(t, card, me, entryIndex));
     await refresh();
@@ -179,7 +179,7 @@ function beginDelete(wrap: HTMLElement, entryIndex: number): void {
   const no = document.createElement('button');
   no.className = 'icon-btn';
   no.textContent = '✗';
-  no.title = 'Hủy';
+  no.title = 'Cancel';
   no.onclick = () => renderHistory();
   wrap.append(yes, no);
 }
@@ -199,7 +199,7 @@ function beginEdit(entryIndex: number): void {
 }
 
 function setEditMode(on: boolean): void {
-  ($('log-save') as HTMLButtonElement).textContent = on ? 'Cập nhật' : 'Lưu log';
+  ($('log-save') as HTMLButtonElement).textContent = on ? 'Update' : 'Save log';
   $('log-cancel').classList.toggle('hidden', !on);
   $('log-section').classList.toggle('editing', on);
 }
@@ -287,7 +287,7 @@ async function guarded(fn: () => Promise<void>): Promise<boolean> {
     return true;
   } catch (e) {
     if (e instanceof CapacityExceededError) showBanner(e.message);
-    else showBanner('Lỗi lưu dữ liệu, thử lại');
+    else showBanner('Failed to save, please retry');
     return false;
   }
 }
@@ -344,5 +344,5 @@ init().catch((e) => {
   }
   console.error('[point-system] init failed', { error: e, context: ctx });
   const msg = e instanceof Error ? e.message : String(e);
-  showBanner(`Không tải được dữ liệu card: ${msg}`);
+  showBanner(`Failed to load card data: ${msg}`);
 });

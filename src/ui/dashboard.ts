@@ -13,11 +13,11 @@ const t = window.TrelloPowerUp.iframe({
 });
 
 const FILTERS: { value: TimeFilter; label: string }[] = [
-  { value: 'all', label: 'Tất cả' },
-  { value: 'today', label: 'Hôm nay' },
-  { value: 'week', label: 'Tuần này' },
-  { value: 'month', label: 'Tháng này' },
-  { value: 'year', label: 'Năm này' },
+  { value: 'all', label: 'All' },
+  { value: 'today', label: 'Today' },
+  { value: 'week', label: 'This week' },
+  { value: 'month', label: 'This month' },
+  { value: 'year', label: 'This year' },
 ];
 
 const PALETTE = ['#2c6e49', '#b07a16', '#3a6ea5', '#b33a22', '#6f4a8e', '#1f7a6f', '#9c5a2c', '#4a7a1f'];
@@ -31,7 +31,7 @@ let loading = false;
 
 function $(id: string): HTMLElement {
   const el = document.getElementById(id);
-  if (!el) throw new Error(`Thiếu phần tử #${id}`);
+  if (!el) throw new Error(`Missing element #${id}`);
   return el;
 }
 
@@ -54,7 +54,7 @@ function showOnly(id: StateId): void {
 
 function boardId(): string {
   const ctx = t.getContext?.();
-  if (!ctx) throw new Error('Thiếu context board');
+  if (!ctx) throw new Error('Missing board context');
   return ctx.board;
 }
 
@@ -68,7 +68,7 @@ async function load(): Promise<void> {
   showOnly('state-loading');
   try {
     const restApi = await restApiClient();
-    if (!restApi) throw new Error('REST API không khả dụng');
+    if (!restApi) throw new Error('REST API unavailable');
     data = await fetchBoardStats(restApi, boardId(), PLUGIN_ID, APP_KEY);
     fetchedAt = new Date();
     render();
@@ -78,7 +78,7 @@ async function load(): Promise<void> {
       await restApi?.clearToken();
       showOnly('state-auth');
     } else {
-      $('error-msg').textContent = `Lỗi khi tải: ${e instanceof Error ? e.message : String(e)}`;
+      $('error-msg').textContent = `Load error: ${e instanceof Error ? e.message : String(e)}`;
       showOnly('state-error');
     }
   } finally {
@@ -129,9 +129,9 @@ function renderList(): void {
 
   $('table-host').innerHTML =
     `<table class="stat"><thead><tr><th>List</th><th class="num">Cards</th>` +
-    `<th class="num">Est</th><th class="num">Log</th><th>Tiến độ</th></tr></thead>` +
+    `<th class="num">Est</th><th class="num">Log</th><th>Progress</th></tr></thead>` +
     `<tbody>${body}</tbody>` +
-    `<tfoot><tr><td>TỔNG</td><td class="num">${agg.totalCards}</td>` +
+    `<tfoot><tr><td>TOTAL</td><td class="num">${agg.totalCards}</td>` +
     `<td class="num">${agg.totalEstimate}</td><td class="num">${agg.totalLogged}</td>` +
     `<td class="prog">${tProg}</td></tr></tfoot></table>`;
 
@@ -148,15 +148,15 @@ function renderUser(): void {
 
   const body = agg.rows.map((r) =>
     `<tr><td><span class="swatch" style="background:${colorByUser.get(r.memberId)}"></span>` +
-    `${escapeHtml(r.fullName || '(ẩn danh)')}</td>` +
+    `${escapeHtml(r.fullName || '(anonymous)')}</td>` +
     `<td class="num">${r.entries}</td><td class="num">${r.logged}</td></tr>`
   ).join('');
 
   $('table-host').innerHTML =
     `<table class="stat"><thead><tr><th>User</th><th class="num">Entries</th>` +
-    `<th class="num">Tổng Log</th></tr></thead>` +
+    `<th class="num">Total Log</th></tr></thead>` +
     `<tbody>${body}</tbody>` +
-    `<tfoot><tr><td>TỔNG</td><td class="num">${agg.totalEntries}</td>` +
+    `<tfoot><tr><td>TOTAL</td><td class="num">${agg.totalEntries}</td>` +
     `<td class="num">${agg.totalLogged}</td></tr></tfoot></table>`;
 
   renderBreakdown(breakdown(collectEntries(data.cards, range, false), granularityFor(filter), MAX_BUCKETS), colorByUser);
@@ -183,7 +183,7 @@ function renderBreakdown(buckets: BreakdownBucket[], colorByUser: Map<string, st
       `<span class="bk-val">${b.total}</span></div>`;
   }).join('');
 
-  host.innerHTML = `<div class="bk-title">Breakdown theo kỳ</div>${rows}`;
+  host.innerHTML = `<div class="bk-title">Breakdown by period</div>${rows}`;
 }
 
 function buildControls(): void {
@@ -208,16 +208,16 @@ async function init(): Promise<void> {
   buildControls();
   const restApi = await restApiClient();
   if (!restApi) {
-    $('error-msg').textContent = 'REST API không khả dụng từ dashboard iframe';
+    $('error-msg').textContent = 'REST API unavailable from the dashboard iframe';
     showOnly('state-error');
     return;
   }
   const token = await restApi.getToken();
-  if (!token) { showOnly('state-auth'); return; } // lazy: chờ user bấm "Cấp quyền & tải"
+  if (!token) { showOnly('state-auth'); return; } // lazy: chờ user bấm "Authorize & load"
   await load();
 }
 
 init().catch((e) => {
-  $('error-msg').textContent = `Lỗi khởi tạo: ${e instanceof Error ? e.message : String(e)}`;
+  $('error-msg').textContent = `Init error: ${e instanceof Error ? e.message : String(e)}`;
   showOnly('state-error');
 });

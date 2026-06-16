@@ -67,8 +67,8 @@ describe('weekBucket', () => {
 });
 
 describe('monthBucket', () => {
-  it('key YYYY-MM, label T<tháng>', () => {
-    expect(monthBucket('2026-06-06')).toEqual({ key: '2026-06', label: 'T6' });
-    expect(monthBucket('2026-01-15')).toEqual({ key: '2026-01', label: 'T1' });
+  it('key YYYY-MM, label M<tháng>', () => {
+    expect(monthBucket('2026-06-06')).toEqual({ key: '2026-06', label: 'M6' });
+    expect(monthBucket('2026-01-15')).toEqual({ key: '2026-01', label: 'M1' });
   });
 });

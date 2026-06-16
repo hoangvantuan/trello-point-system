@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Point System</title>
@@ -16,26 +16,26 @@
     <div id="app">
       <div id="capacity-banner" class="banner hidden"></div>
 
-      <!-- Bảng cân đối: đã log / mục tiêu -->
+      <!-- Summary: logged / target -->
       <section class="summary">
         <div class="summary-top">
           <div class="figures">
             <span id="sum-logged" class="fig-logged">0</span>
             <span id="sum-estimate" class="fig-target">/ —</span>
           </div>
-          <label class="est-edit" title="Đặt mục tiêu (estimate)">
-            <span class="est-label">mục tiêu</span>
+          <label class="est-edit" title="Set target (estimate)">
+            <span class="est-label">target</span>
             <input id="estimate" type="number" min="0" max="100" step="0.1" placeholder="—" />
           </label>
         </div>
         <div id="progress-bar" class="progress empty"><span></span></div>
-        <div id="sum-meta" class="sum-meta muted">Chưa đặt mục tiêu</div>
+        <div id="sum-meta" class="sum-meta muted">No target set</div>
       </section>
 
       <div class="cols">
-      <!-- Ghi nhanh một mốc point -->
+      <!-- Quick log a point entry -->
       <section id="log-section" class="log">
-        <div class="sec-head">Ghi point</div>
+        <div class="sec-head">Log point</div>
         <div id="quick-points" class="chips"></div>
         <div class="form-grid">
           <label class="fld fld-pt">
@@ -43,26 +43,26 @@
             <input id="log-point" type="number" min="0" max="100" step="0.1" placeholder="0" />
           </label>
           <label class="fld fld-date">
-            <span>Ngày</span>
+            <span>Date</span>
             <input id="log-date" type="date" />
           </label>
           <label class="fld fld-cm">
-            <span>Ghi chú</span>
-            <input id="log-comment" type="text" placeholder="tùy chọn…" />
+            <span>Note</span>
+            <input id="log-comment" type="text" placeholder="optional…" />
           </label>
         </div>
         <div id="log-error" class="error"></div>
         <div class="form-actions">
-          <button id="log-save" class="btn-primary">Lưu log</button>
-          <button id="log-cancel" class="btn-ghost hidden">Hủy</button>
+          <button id="log-save" class="btn-primary">Save log</button>
+          <button id="log-cancel" class="btn-ghost hidden">Cancel</button>
         </div>
       </section>
 
-      <!-- Lịch sử -->
+      <!-- History -->
       <section class="history-sec">
         <div class="sec-head sec-head-row">
-          <span>Lịch sử</span>
-          <span class="grand"><em>tổng nhóm</em> <span id="grand-total">0</span></span>
+          <span>History</span>
+          <span class="grand"><em>team total</em> <span id="grand-total">0</span></span>
         </div>
         <div id="history"></div>
       </section>

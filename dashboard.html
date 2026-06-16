@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Point Stats Dashboard</title>
@@ -16,41 +16,41 @@
     <div id="app">
       <header class="dash-head">
         <div class="title">
-          <h1>Sổ cái điểm</h1>
-          <span class="sub">Point Stats · thống kê board</span>
+          <h1>Point Ledger</h1>
+          <span class="sub">Point Stats · board overview</span>
         </div>
         <div class="head-right">
           <span id="fetched-at" class="clock"></span>
-          <button id="refresh" class="btn-ghost">↻ Làm mới</button>
+          <button id="refresh" class="btn-ghost">↻ Refresh</button>
         </div>
       </header>
 
-      <nav id="filters" class="filters" aria-label="Bộ lọc thời gian"></nav>
+      <nav id="filters" class="filters" aria-label="Time filter"></nav>
 
       <div id="tabs" class="tabs" role="tablist">
-        <button class="tab" data-tab="list" role="tab">Theo List</button>
-        <button class="tab" data-tab="user" role="tab">Theo User</button>
+        <button class="tab" data-tab="list" role="tab">By List</button>
+        <button class="tab" data-tab="user" role="tab">By User</button>
       </div>
 
       <div id="truncated" class="warn hidden">
-        ⚠ Board quá lớn, thống kê có thể chưa đủ card.
+        ⚠ Board is large — stats may not include every card.
       </div>
 
-      <!-- Các trạng thái loại trừ nhau -->
-      <section id="state-loading" class="state hidden">Đang tải sổ…</section>
+      <!-- Mutually exclusive states -->
+      <section id="state-loading" class="state hidden">Loading ledger…</section>
 
       <section id="state-auth" class="state hidden">
-        <p>Cấp quyền đọc board để mở sổ cái thống kê.</p>
-        <button id="authorize" class="btn-primary">Cấp quyền &amp; tải</button>
+        <p>Grant board read access to open the stats ledger.</p>
+        <button id="authorize" class="btn-primary">Authorize &amp; load</button>
       </section>
 
       <section id="state-empty" class="state empty-note hidden">
-        Board chưa có card nào có point data.
+        No cards on this board have point data yet.
       </section>
 
       <section id="state-error" class="state error hidden">
         <p id="error-msg"></p>
-        <button id="retry" class="btn-primary">Thử lại</button>
+        <button id="retry" class="btn-primary">Retry</button>
       </section>
 
       <section id="content" class="content hidden">
