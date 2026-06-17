@@ -2,6 +2,7 @@
 
 Ngày: 2026-06-06
 Trạng thái: Đã chốt qua brainstorming + grill, đã xác minh thực tế trên board. Chờ review spec.
+Cập nhật 2026-06-17 (grill): tách rõ stock vs flow — tab List bỏ filter thời gian + breakdown (sửa bug progress `0/30`); filter chỉ thuộc tab User. Code + spec đã đồng bộ.
 
 > Bản này thay thế thiết kế "sync thủ công + cache board-scope 8192" trước đó.
 > Lý do đổi hướng: xác minh được REST API **bulk-fetch pluginData mọi card trong 1 request**
@@ -14,7 +15,7 @@ Thêm **dashboard thống kê** ở cấp board, giải quyết 2 nhu cầu:
 1. **Theo List**: tổng hợp tiến độ (estimate vs. logged) mỗi list, kèm thanh progress.
 2. **Theo User**: tổng hợp point mỗi user đã log, breakdown theo ngày/tuần/tháng/năm.
 
-Cả hai tab dùng chung **bộ lọc thời gian** (tất cả / hôm nay / tuần này / tháng này / năm này).
+Chỉ tab **Theo User** có **bộ lọc thời gian** (tất cả / hôm nay / tuần này / tháng này / năm này). Tab **Theo List** là ảnh chụp trạng thái (stock) nên **không** có bộ lọc — chi tiết và lý do ở mục 6.
 
 Phi mục tiêu: export CSV, biểu đồ burndown/velocity, sync tự động (webhook), backend/store ngoài.
 
@@ -161,7 +162,7 @@ Với mỗi card:
 3. Decode mỗi `log_*` (tái dùng `decodeMemberLog`) thành entries, phẳng hoá kèm `memberId` + `fullName` → `LogEntry[]`.
 4. Gói thành `CardStat` kèm `closed`, `idList`.
 
-Tổng hợp theo list/user + breakdown tính client-side, áp filter thời gian.
+Tổng hợp tính client-side: tab User áp filter thời gian + breakdown; tab List **tích lũy toàn thời gian**, không filter, không breakdown.
 
 ## 6. Phạm vi card theo tab
 
@@ -173,6 +174,22 @@ Fetch 1 lần `filter=all`, rồi tách phạm vi phía client bằng cờ `clos
 | Theo List | **Chỉ visible** (`closed === false`) | Ảnh chụp tiến độ board hiện tại. Lọc visible cũng né vấn đề card archive mồ côi list (card visible luôn nằm trên list `filter=open`). |
 
 Lưu ý ngữ nghĩa tab List: nếu team archive card sau khi Done, point trên card đó không hiện ở tab List. Tab List là "công việc đang mở", không phải "tổng tiến độ". Tab List hiển thị **số thực tế** của card visible, nhãn trung thực, không xử lý đặc biệt theo quy trình.
+
+### Stock vs Flow — vì sao tab List KHÔNG có filter thời gian
+
+Hai tab có **bản chất thời gian khác nhau**, đây là lõi chi phối toàn bộ thiết kế hiển thị:
+
+| | Tab List | Tab User |
+|---|---|---|
+| Bản chất | **Stock** — trạng thái tích lũy ("còn bao nhiêu việc") | **Flow** — hoạt động theo kỳ ("kỳ này log bao nhiêu") |
+| Chiều thời gian | Không (luôn là "bây giờ") | Có (cắt lát theo kỳ) |
+| Filter thời gian | **Không áp** | **Có** |
+| Breakdown | **Không** | Có (tuần/tháng) |
+| Cột Log | Tích lũy toàn thời gian | Σ point trong kỳ đã lọc |
+
+Lý do then chốt: progress bar tab List = `Log / Est`. `Est` không gắn ngày nên không filter được. Nếu filter chỉ cắt tử số `Log` mà mẫu số `Est` giữ nguyên, một card đã log đủ `30/30` từ tuần trước sẽ hiện `0/30 = 0%` khi chọn "Tuần này" — **số liệu sai lệch**. Vì vậy tab List bỏ filter hoàn toàn; tử số và mẫu số cùng trục thời gian (toàn bộ).
+
+Hệ quả gắn nhãn: "Tổng Log" tab List (chỉ card visible) sẽ **nhỏ hơn** "Tổng Log" tab User filter=all (gồm archive). Đây là đúng và có chủ đích — mỗi tab kèm một caption trung thực (xem mục 7).
 
 ## 7. Giao diện
 
@@ -187,11 +204,11 @@ Lưu ý ngữ nghĩa tab List: nếu team archive card sau khi Done, point trên
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│  📊 Point Stats Dashboard                            │
+│  📊 Point Stats Dashboard          [🔄 Làm mới] ⏱14:05│
 │                                                      │
-│  Filter: [Tất cả ▾] [Tuần này] [Tháng này] [Năm]   │
-│                                                      │
-│  [Theo List]  [Theo User]      [🔄 Làm mới] ⏱ 14:05 │
+│  [Theo List]  [Theo User]                            │
+│  Filter: [Tất cả] [Tuần] [Tháng] [Năm]  ← chỉ tab User│
+│  « Ảnh chụp tiến độ hiện tại — chỉ card đang mở »     │
 │                                                      │
 │ ┌──────────────────────────────────────────────────┐ │
 │ │ List          Cards   Est   Log   Tiến độ        │ │
@@ -211,21 +228,25 @@ Lưu ý ngữ nghĩa tab List: nếu team archive card sau khi Done, point trên
 └──────────────────────────────────────────────────────┘
 ```
 
-### Tab "Theo List" (chỉ card visible)
+### Tab "Theo List" (chỉ card visible, KHÔNG filter, KHÔNG breakdown)
+
+Caption dưới tab: *"Ảnh chụp tiến độ hiện tại — chỉ card đang mở."*
 
 | Cột | Nội dung |
 |---|---|
 | List | Tên list |
 | Cards | Số card có point data trong list |
 | Est | Σ estimate các card (null tính là 0) |
-| Log | Σ logged (filter theo thời gian) |
-| Tiến độ | thanh progress bar + phần trăm. Nếu không có estimate → hiện "—" |
+| Log | Σ logged **tích lũy toàn thời gian** (không filter — đây là stock) |
+| Tiến độ | thanh progress bar + phần trăm = Log/Est. Nếu không có estimate → hiện "—" |
 
 Dòng **TỔNG** cố định ở cuối bảng.
 
-Bên dưới bảng: **breakdown theo tuần** (bar chart text-based hoặc div bar). Hiện 4-8 tuần gần nhất, mỗi bar = tổng logged trong tuần đó.
+Tab List **không có breakdown** và **không chịu bộ lọc thời gian**: nó là ảnh chụp trạng thái hiện tại, không có chiều thời gian quá khứ. Mọi phân tích theo kỳ (flow) nằm ở tab User. (Lý do đầy đủ ở mục 6 — stock vs flow.)
 
 ### Tab "Theo User" (tất cả card, gồm archive)
+
+Caption dưới tab: *"Toàn bộ công đã log, gồm card đã archive."* Đây là tab duy nhất có bộ lọc thời gian + breakdown.
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -255,7 +276,9 @@ Dòng **TỔNG** cố định ở cuối.
 
 Breakdown theo tuần: grouped bar (text-based), mỗi user một màu/pattern. Hiện 4-8 tuần gần nhất.
 
-### Bộ lọc thời gian
+### Bộ lọc thời gian (chỉ tab User)
+
+Bộ lọc nằm dưới thanh tab, chỉ hiện khi ở tab User. Sang tab List thì ẩn — tab List là stock, không có chiều thời gian (mục 6).
 
 | Giá trị | Ý nghĩa |
 |---|---|
@@ -265,7 +288,7 @@ Breakdown theo tuần: grouped bar (text-based), mỗi user một màu/pattern. 
 | Tháng này | Ngày 1 → cuối tháng hiện tại |
 | Năm này | 1/1 → 31/12 năm hiện tại |
 
-Filter áp dụng lên `LogEntry.date`, xử lý client-side. Breakdown tự động điều chỉnh granularity: "Hôm nay" → chỉ hiện tổng. "Năm này" → breakdown theo tháng.
+Filter áp dụng lên `LogEntry.date` của tab User, xử lý client-side. Breakdown tự động điều chỉnh granularity: "Hôm nay" → chỉ hiện tổng. "Năm này" → breakdown theo tháng.
 
 ### Nút Làm mới
 
@@ -331,6 +354,7 @@ Filter áp dụng lên `LogEntry.date`, xử lý client-side. Breakdown tự đ�
 | Có cache không? | **Không**. Tổng hợp trong RAM | Fetch rẻ tới mức cache vô nghĩa. Né luôn trần 8192. |
 | Board lớn? | Phân trang `before`/`limit` + guard cảnh báo. Không store ngoài | YAGNI backend. Fetch vài trăm card <3s. |
 | Phạm vi card mỗi tab? | User=tất cả, List=chỉ visible | User cần tích lũy; List là ảnh chụp WIP, né list mồ côi |
+| Filter thời gian áp tab nào? | **Chỉ tab User** (flow). Tab List là stock: Log tích lũy, không filter, không breakdown | Tab List = trạng thái hiện tại; trộn filter làm progress = Log/Est sai lệch (card `30/30` hiện `0%` khi lọc "tuần này") |
 | Authorize? | Per-user, lazy, scope read, expiration never | Không backend nên mỗi người tự cấp; lazy tránh popup dội |
 
 ## 11. Mục gác lại (xử lý lúc implement)

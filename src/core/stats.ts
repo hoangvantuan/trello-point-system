@@ -51,10 +51,11 @@ export function collectEntries(
 }
 
 // Tab "Theo List": CHỈ card visible (closed === false). Card "có point data" = có estimate hoặc có entry.
+// Đây là ảnh chụp trạng thái (stock): KHÔNG áp filter thời gian. Est không có ngày nên Log cũng
+// phải tích lũy toàn thời gian, nếu không progress = Log/Est sẽ sai lệch (xem F-* trong memory).
 export function aggregateByList(
   cards: CardStat[],
-  lists: { id: string; name: string }[],
-  range: DateRange | null
+  lists: { id: string; name: string }[]
 ): ListAggregate {
   const nameById = new Map(lists.map((l) => [l.id, l.name]));
   const acc = new Map<string, { name: string; cards: number; estimate: number; logged: number }>();
@@ -63,9 +64,7 @@ export function aggregateByList(
     if (card.closed) continue;
     const hasData = card.estimate !== null || card.entries.length > 0;
     if (!hasData) continue;
-    const logged = roundTotal(
-      card.entries.filter((e) => inRange(e.date, range)).reduce((s, e) => s + e.point, 0)
-    );
+    const logged = roundTotal(card.entries.reduce((s, e) => s + e.point, 0));
     const name = nameById.get(card.idList) ?? '(hidden list)';
     const row = acc.get(card.idList) ?? { name, cards: 0, estimate: 0, logged: 0 };
     row.cards += 1;

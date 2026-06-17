@@ -101,6 +101,14 @@ function render(): void {
     b.classList.toggle('active', (b as HTMLElement).dataset.filter === filter);
   }
 
+  // Filter + breakdown (flow) chỉ thuộc tab User. Tab List là stock nên ẩn cả hai.
+  const isUser = tab === 'user';
+  $('filters').classList.toggle('hidden', !isUser);
+  $('breakdown').classList.toggle('hidden', !isUser);
+  $('tab-caption').textContent = isUser
+    ? 'All logged work, including archived cards.'
+    : 'Snapshot of current progress — open cards only.';
+
   if (tab === 'list') renderList();
   else renderUser();
 }
@@ -112,8 +120,8 @@ function progressBar(pct: number): string {
 
 function renderList(): void {
   if (!data) return;
-  const range = periodRange(filter, fetchedAt ?? new Date());
-  const agg = aggregateByList(data.cards, data.lists, range);
+  // Tab List là stock: tích lũy toàn thời gian, KHÔNG áp filter, KHÔNG breakdown.
+  const agg = aggregateByList(data.cards, data.lists);
 
   const body = agg.rows.map((r) => {
     const pct = r.estimate === 0 ? null : Math.round((r.logged / r.estimate) * 100);
@@ -134,8 +142,6 @@ function renderList(): void {
     `<tfoot><tr><td>TOTAL</td><td class="num">${agg.totalCards}</td>` +
     `<td class="num">${agg.totalEstimate}</td><td class="num">${agg.totalLogged}</td>` +
     `<td class="prog">${tProg}</td></tr></tfoot></table>`;
-
-  renderBreakdown(breakdown(collectEntries(data.cards, range, true), granularityFor(filter), MAX_BUCKETS), null);
 }
 
 function renderUser(): void {

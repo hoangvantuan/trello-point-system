@@ -25,12 +25,12 @@
         </div>
       </header>
 
-      <nav id="filters" class="filters" aria-label="Time filter"></nav>
-
       <div id="tabs" class="tabs" role="tablist">
         <button class="tab" data-tab="list" role="tab">By List</button>
         <button class="tab" data-tab="user" role="tab">By User</button>
       </div>
+
+      <nav id="filters" class="filters hidden" aria-label="Time filter"></nav>
 
       <div id="truncated" class="warn hidden">
         ⚠ Board is large — stats may not include every card.
@@ -54,6 +54,7 @@
       </section>
 
       <section id="content" class="content hidden">
+        <p id="tab-caption" class="tab-caption"></p>
         <div id="table-host" class="sheet"></div>
         <div id="breakdown" class="breakdown sheet"></div>
       </section>

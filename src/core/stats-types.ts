@@ -19,7 +19,7 @@ export interface CardStat {
   entries: LogEntry[];
 }
 
-// Bộ lọc thời gian dùng chung 2 tab.
+// Bộ lọc thời gian. CHỈ áp cho tab User (flow). Tab List là stock nên không dùng.
 export type TimeFilter = 'all' | 'today' | 'week' | 'month' | 'year';
 
 // Khoảng ngày [start, end] bao gồm 2 đầu, dạng YYYY-MM-DD.
@@ -34,7 +34,7 @@ export interface ListStat {
   name: string;
   cards: number; // số card có point data
   estimate: number; // Σ estimate (null tính 0)
-  logged: number; // Σ logged (đã filter thời gian)
+  logged: number; // Σ logged tích lũy toàn thời gian (KHÔNG filter — đây là stock)
 }
 
 export interface ListAggregate {

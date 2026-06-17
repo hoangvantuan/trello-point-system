@@ -23,3 +23,4 @@
 ## [2026-06-16] capture | F-013 (new fact entry)
 ## [2026-06-16] capture | F-012 Security headers static-asset Worker qua public/_headers
 ## [2026-06-16] capture | F-013 Power-Up iframe dùng CSP frame-ancestors thay X-Frame-Options
+## [2026-06-17] capture | F-014 (new fact entry)

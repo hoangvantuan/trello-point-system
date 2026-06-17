@@ -75,7 +75,7 @@ const lists = [
 
 describe('aggregateByList', () => {
   it('chỉ tính card visible, gộp theo list, giữ thứ tự lists', () => {
-    const agg = aggregateByList(cards, lists, null);
+    const agg = aggregateByList(cards, lists);
     expect(agg.rows).toEqual([
       { idList: 'L1', name: 'To Do', cards: 1, estimate: 5, logged: 4.5 },
     ]);
@@ -91,17 +91,25 @@ describe('aggregateByList', () => {
         entries: [{ memberId: 'm1', fullName: 'Tuấn', date: '2026-06-06', point: 2 }],
       },
     ];
-    const agg = aggregateByList(visibleNoEst, lists, null);
+    const agg = aggregateByList(visibleNoEst, lists);
     expect(agg.rows).toEqual([
       { idList: 'L2', name: 'Done', cards: 1, estimate: 0, logged: 2 },
     ]);
   });
 
-  it('range lọc logged nhưng card vẫn được đếm nếu có estimate', () => {
-    const agg = aggregateByList(cards, lists, { start: '2026-01-01', end: '2026-01-31' });
-    expect(agg.rows).toEqual([
-      { idList: 'L1', name: 'To Do', cards: 1, estimate: 5, logged: 0 },
-    ]);
+  it('Log tích lũy MỌI thời điểm, không cắt theo kỳ (anti-regression bug 0/30)', () => {
+    // Card có entry rải năm ngoái + hôm nay. Stock phải cộng hết để progress = Log/Est đúng,
+    // bất kể đang chọn filter nào. aggregateByList KHÔNG còn nhận tham số thời gian.
+    const spread: CardStat[] = [{
+      id: 'cD', idShort: 4, name: 'D', idList: 'L1', closed: false, estimate: 10,
+      entries: [
+        { memberId: 'm1', fullName: 'Tuấn', date: '2025-01-15', point: 4 },
+        { memberId: 'm1', fullName: 'Tuấn', date: '2026-06-06', point: 6 },
+      ],
+    }];
+    const agg = aggregateByList(spread, lists);
+    expect(agg.rows[0]!.estimate).toBe(10);
+    expect(agg.rows[0]!.logged).toBe(10); // 4 + 6, không bị cắt
   });
 });
 
