@@ -25,3 +25,19 @@
 ## [2026-06-16] capture | F-013 Power-Up iframe dùng CSP frame-ancestors thay X-Frame-Options
 ## [2026-06-17] capture | F-014 (new fact entry)
 ## [2026-06-19] capture | F-015 (new fact entry)
+## [2026-06-19] capture | F-016 (new fact entry)
+## [2026-06-19] capture | F-017 (new fact entry)
+## [2026-06-19] capture | F-018 (new fact entry)
+## [2026-06-19] capture | F-019 (new fact entry)
+## [2026-06-19] capture | F-020 (new fact entry)
+## [2026-06-19] capture | F-021 (new fact entry)
+## [2026-06-19] capture | M-002 (new map entry)
+## [2026-06-19] archive | F-001 → archive/
+## [2026-06-19] archive | F-004 → archive/
+## [2026-06-19] archive | F-005 → archive/
+## [2026-06-19] archive | F-007 → archive/
+## [2026-06-19] archive | F-008 → archive/
+## [2026-06-19] archive | F-009 → archive/
+## [2026-06-19] archive | F-012 → archive/
+## [2026-06-19] archive | F-013 → archive/
+## [2026-06-19] consolidate | gộp F-005+F-009→F-016, F-007+F-008→F-017, F-012+F-013→F-018, F-001+F-004→F-019; tạo pattern F-020 (stock/flow) + gap F-021 (codec) + M-002 (checklist Power-Up); archive 8 entry gốc; cross-ref 2 chiều + status consolidated 15 entry
