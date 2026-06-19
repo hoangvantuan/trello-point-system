@@ -3,8 +3,16 @@ export type ValidationResult =
   | { ok: false; error: string };
 
 const MAX_POINT = 100;
+const MAX_DECIMALS = 3;
 
-// Kiểm tra point: rỗng / NaN / <=0 / >100 / quá 1 chữ số thập phân đều bị chặn.
+// Số chữ số thập phân tối đa: nhân 10^N rồi so với số nguyên gần nhất.
+// Né nhiễu float bằng epsilon nhỏ trước khi so sánh.
+function hasAtMostDecimals(value: number, decimals: number): boolean {
+  const scaled = value * 10 ** decimals;
+  return Math.abs(scaled - Math.round(scaled)) < 1e-9;
+}
+
+// Kiểm tra point: rỗng / NaN / <=0 / >100 / quá 3 chữ số thập phân đều bị chặn.
 export function validatePoint(input: string): ValidationResult {
   const s = input.trim();
   if (s === '') return { ok: false, error: 'Enter a point value' };
@@ -14,8 +22,8 @@ export function validatePoint(input: string): ValidationResult {
   if (value <= 0) return { ok: false, error: 'Point must be greater than 0' };
   if (value > MAX_POINT) return { ok: false, error: `Point max is ${MAX_POINT}` };
 
-  if (Math.round(value * 10) !== value * 10) {
-    return { ok: false, error: 'Point allows at most 1 decimal place' };
+  if (!hasAtMostDecimals(value, MAX_DECIMALS)) {
+    return { ok: false, error: `Point allows at most ${MAX_DECIMALS} decimal places` };
   }
 
   return { ok: true, value };
@@ -49,6 +57,10 @@ export function validateEstimate(input: string): EstimateValidationResult {
   if (!Number.isFinite(value)) return { ok: false, error: 'Estimate must be a number' };
   if (value <= 0) return { ok: false, error: 'Estimate must be greater than 0' };
   if (value > 100) return { ok: false, error: 'Estimate max is 100' };
+
+  if (!hasAtMostDecimals(value, MAX_DECIMALS)) {
+    return { ok: false, error: `Estimate allows at most ${MAX_DECIMALS} decimal places` };
+  }
 
   return { ok: true, value };
 }

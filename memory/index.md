@@ -26,3 +26,4 @@
 | F-012 | Security headers cho static-asset Worker đặt qua public/_headers -> dist/_headers | raw | cloudflare, security, headers, csp, hsts, deploy, trello, power-up | [↗](entries/F-012.md) |
 | F-013 | Power-Up iframe phải dùng CSP frame-ancestors, KHÔNG dùng X-Frame-Options | raw | trello, power-up, security, csp, iframe, headers | [↗](entries/F-013.md) |
 | F-014 | Tab thống kê dạng stock (progress = Log/Est) không được áp filter thời gian vào tử số | raw | trello, power-up, dashboard, stats, stock-flow, progress, bug, ux | [↗](entries/F-014.md) |
+| F-015 | Nới precision point phải nâng roundTotal đồng bộ; gốc bug là bất đối xứng validatePoint vs validateEstimate | raw | point, validate, totals, rounding, decimal, precision, bug | [↗](entries/F-015.md) |

@@ -10,6 +10,12 @@ describe('validatePoint', () => {
     expect(validatePoint('1.5')).toEqual({ ok: true, value: 1.5 });
   });
 
+  it('nhận tới 3 chữ số thập phân (0.125 = 1/8)', () => {
+    expect(validatePoint('0.125')).toEqual({ ok: true, value: 0.125 });
+    expect(validatePoint('0.25')).toEqual({ ok: true, value: 0.25 });
+    expect(validatePoint('1.375')).toEqual({ ok: true, value: 1.375 });
+  });
+
   it('cắt khoảng trắng hai đầu', () => {
     expect(validatePoint('  2  ')).toEqual({ ok: true, value: 2 });
   });
@@ -39,8 +45,9 @@ describe('validatePoint', () => {
     expect(validatePoint('100')).toEqual({ ok: true, value: 100 });
   });
 
-  it('chặn quá 1 chữ số thập phân', () => {
-    expect(validatePoint('1.25').ok).toBe(false);
+  it('chặn quá 3 chữ số thập phân', () => {
+    expect(validatePoint('0.1234').ok).toBe(false);
+    expect(validatePoint('1.0005').ok).toBe(false);
   });
 });
 
@@ -79,6 +86,14 @@ describe('validateEstimate', () => {
   it('nhận số hợp lệ', () => {
     expect(validateEstimate('8')).toEqual({ ok: true, value: 8 });
     expect(validateEstimate('2.5')).toEqual({ ok: true, value: 2.5 });
+  });
+
+  it('nhận tới 3 chữ số thập phân', () => {
+    expect(validateEstimate('0.125')).toEqual({ ok: true, value: 0.125 });
+  });
+
+  it('chặn quá 3 chữ số thập phân', () => {
+    expect(validateEstimate('0.1234').ok).toBe(false);
   });
 
   it('chặn âm', () => {

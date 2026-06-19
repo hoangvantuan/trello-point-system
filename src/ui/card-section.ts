@@ -14,7 +14,7 @@ import type { Entry } from '../core/types';
 
 const t = (window.TrelloPowerUp as unknown as { iframe: () => TrelloT }).iframe();
 
-const QUICK_POINTS = [0.5, 1, 2, 3, 5, 8];
+const QUICK_POINTS = [0.125, 0.25, 0.5, 1, 2, 3, 5, 8];
 const UNDO_MS = 5000;
 
 function $(id: string): HTMLElement {
@@ -142,7 +142,7 @@ function showCustomInput(): void {
   input.className = 'chip-input';
   input.min = '0';
   input.max = '100';
-  input.step = '0.1';
+  input.step = '0.125';
   input.placeholder = '0';
 
   input.onkeydown = (e) => {

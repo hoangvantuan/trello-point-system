@@ -5,6 +5,17 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-06-19
+
+### Added
+
+- **Fractional points (up to 3 decimal places)**: point and estimate now accept values such as `0.125` (1/8), `0.25`, and `0.375`. Quick-log chips `0.125` and `0.25` were added.
+
+### Changed
+
+- Totals are now rounded to **3 decimal places** (previously 2), so logging `0.125` no longer drifts in the UI (e.g. eight entries of `0.125` show `1` instead of `1.04`).
+- Point and estimate validation now share a single `hasAtMostDecimals` helper, removing the asymmetry where a `0.125` target could be set but never logged. Number inputs step by `0.125`.
+
 ## [1.1.0] - 2026-06-17
 
 ### Added
@@ -29,4 +40,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Several iframe resize issues (after entering an estimate, after refresh) and popup overflow.
 - Dashboard horizontal overflow on narrow iframes: tables now scroll within their sheet and breakdown bars can shrink.
 
+[1.2.0]: https://github.com/hoangvantuan/trello-point-system/releases/tag/v1.2.0
 [1.1.0]: https://github.com/hoangvantuan/trello-point-system/releases/tag/v1.1.0

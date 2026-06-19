@@ -7,8 +7,13 @@ describe('roundTotal', () => {
     expect(roundTotal(1.1 + 2.2)).toBe(3.3);
   });
 
-  it('làm tròn 2 chữ số', () => {
-    expect(roundTotal(6.555)).toBe(6.56);
+  it('làm tròn 3 chữ số', () => {
+    expect(roundTotal(6.5555)).toBe(6.556);
+  });
+
+  it('giữ nguyên 3 chữ số thập phân (0.125)', () => {
+    expect(roundTotal(0.125)).toBe(0.125);
+    expect(roundTotal(0.125 + 0.125)).toBe(0.25);
   });
 
   it('giữ số nguyên', () => {
